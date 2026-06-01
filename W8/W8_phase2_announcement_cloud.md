@@ -28,9 +28,9 @@ Mỗi HV 1 repo GitHub cá nhân chứa toàn bộ portfolio Phase 2. Khác Phas
 |---|---|
 | **T2 01/06 (hôm nay)** | Self-study Terraform phần 1 — IaC overview + HCL syntax |
 | **T3 02/06** | Self-study Terraform phần 2 — Workflow (Init/Plan/Apply/Destroy) + State Management + Modules + Best Practices<br>**15h–17h: LIVE Terraform với mentor Minh (online)**<br>**17h–18h: Online Test 1** (60p, scope Terraform) |
-| **T4 03/06** | Self-study K8s — đọc trước lấy kiến thức nền về Container/Orchestration (Pod, Service, probes, ConfigMap/Secret, NetworkPolicy) |
-| **T5 04/06** | **Onsite Đà Nẵng với mentor Nghĩa — dạy K8s Container/Orchestration + scaling/networking/deploy** + bắt đầu Lab "Build minimal K8s platform" |
-| **T6 05/06** | Onsite — hoàn thiện Lab → show-and-tell pod 5 người 13h30–15h → **15h–16h: Online Test 2** (60p, scope K8s + Lab) |
+| **T4 03/06** | Self-study K8s — đọc trước lấy kiến thức nền về Container/Orchestration (Pod, Service, probes, ConfigMap/Secret, NetworkPolicy). Cài sẵn **Docker Desktop + minikube + kubectl** trên laptop. |
+| **T5 04/06** | **Onsite Đà Nẵng với mentor Nghĩa — dạy K8s Container/Orchestration + scaling/networking/deploy trên minikube** + bắt đầu **Lab "Mini K8s platform trên minikube"** |
+| **T6 05/06** | Onsite — hoàn thiện Lab (minikube local) → show-and-tell pod 5 người 13h30–15h → **15h–16h: Online Test 2** (60p, scope K8s + Lab) |
 
 ---
 
@@ -64,10 +64,16 @@ Series của mentor Nghĩa Huỳnh:
 Tài liệu chính thống:
 - Kubernetes Docs — https://kubernetes.io/docs (start: Concepts → Tutorials)
 - Kubernetes Basics (interactive) — https://kubernetes.io/docs/tutorials/kubernetes-basics
+- **minikube** (W8 chạy K8s local trên laptop) — https://minikube.sigs.k8s.io/docs/start
 - CNCF Curriculum (CKA/CKAD reference) — https://github.com/cncf/curriculum
 - *Kubernetes in Action* — Marko Lukša (sách classic)
 - *Kubernetes Patterns* — Bilgin Ibryam (design patterns)
 - kubectl Cheat Sheet — https://kubernetes.io/docs/reference/kubectl/cheatsheet (bookmark!)
+
+Tools cần cài trước T5:
+- **Docker Desktop** (Mac/Windows) hoặc **Docker Engine** (Linux) — https://docs.docker.com/get-docker
+- **kubectl** — https://kubernetes.io/docs/tasks/tools/
+- **minikube** — https://minikube.sigs.k8s.io/docs/start
 
 ### AWS (background cho lab tuần này)
 
