@@ -1,0 +1,1471 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>W7: Capstone Hackathon — XBrain</title><style>
+  :root{--bg:#fff;--side:#f7f7f8;--text:#242424;--muted:#616161;--link:#0067b8;--border:#e3e3e3;--code:#f1f1f1;--active:#e6f2fb;--bar:#0067b8;--hh:48px}
+  html[data-theme=dark]{--bg:#1b1a19;--side:#242322;--text:#e7e7e7;--muted:#a6a6a6;--link:#6cb8f6;--border:#3a3938;--code:#2c2c2b;--active:#26333f;--bar:#4db8ff}
+  *{box-sizing:border-box}html,body{margin:0}
+  body{background:var(--bg);color:var(--text);font:15px/1.65 "Segoe UI",system-ui,Arial,sans-serif}
+  a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}
+  .header{position:sticky;top:0;height:var(--hh);display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--bg);border-bottom:1px solid var(--border);z-index:30}
+  .header .brand{font-weight:600}.header .spacer{margin-left:auto}
+  .theme-btn{background:none;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:13px}
+  .layout{display:grid;grid-template-columns:300px minmax(0,1fr) 240px;align-items:start}
+  .side{position:sticky;top:var(--hh);height:calc(100vh - var(--hh));overflow:auto;background:var(--side);border-right:1px solid var(--border);padding:14px 10px}
+  .search{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);margin-bottom:8px;font-size:13px}
+  .home-link{display:block;padding:6px 8px;border-radius:6px;font-weight:600;font-size:13.5px;color:var(--text);margin-bottom:6px}
+  .home-link:hover{background:var(--active);text-decoration:none}.home-link.active{background:var(--active);box-shadow:inset 3px 0 0 var(--bar)}
+  .tree ul{list-style:none;margin:0;padding-left:13px}.tree>ul{padding-left:0}.tree li{margin:1px 0}
+  .tree a{display:block;padding:3px 8px;border-radius:5px;color:var(--text);font-size:13px;word-break:break-all}
+  .tree a:hover{background:var(--active);text-decoration:none}
+  .tree a.active{background:var(--active);font-weight:600;box-shadow:inset 3px 0 0 var(--bar)}
+  .tree summary{cursor:pointer;padding:3px 6px;border-radius:5px;font-size:13px;font-weight:600;list-style:none}
+  .tree summary::-webkit-details-marker{display:none}
+  .tree summary::before{content:"\25B8";display:inline-block;width:1em;color:var(--muted)}
+  .tree details[open]>summary::before{content:"\25BE"}
+  .tree summary:hover{background:var(--active)}
+  .content{padding:24px 44px 90px;max-width:880px}
+  .content h1{font-size:30px;margin:.1em 0 .5em}
+  .content h2{font-size:22px;margin:1.7em 0 .5em;scroll-margin-top:64px}
+  .content h3{font-size:17px;margin:1.2em 0 .4em;scroll-margin-top:64px}
+  .content table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+  .content th,.content td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  .content th{background:var(--side)}
+  .content code{background:var(--code);padding:2px 6px;border-radius:5px;font-size:.92em}
+  .content pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow:auto}
+  .content blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--link);background:var(--side);border-radius:6px}
+  .content ul{padding-left:20px}.content img{max-width:100%}
+  .toc{position:sticky;top:var(--hh);height:calc(100vh - var(--hh));overflow:auto;padding:24px 16px;font-size:13px}
+  .toc-title{font-weight:600;margin-bottom:10px}
+  .toc a{display:block;color:var(--muted);padding:3px 0 3px 10px;border-left:2px solid transparent;margin-left:-2px}
+  .toc a.lvl3{padding-left:22px}.toc a:hover{color:var(--link)}.toc a.active{color:var(--link);border-left-color:var(--link)}
+  .tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+  .tag-onsite{background:#fde7e7;color:#b91c1c}.tag-online{background:#e3f6e7;color:#15803d}
+  html[data-theme=dark] .tag-onsite{background:#4a1f1f;color:#ff9b9b}html[data-theme=dark] .tag-online{background:#1f3d28;color:#86e29c}
+  @media(max-width:1100px){.layout{grid-template-columns:280px minmax(0,1fr)}.toc{display:none}}
+  @media(max-width:760px){.layout{grid-template-columns:1fr}.side{display:none}}
+</style></head><body>
+<div class="header"><span class="brand">XBrain &times; AWS — Repo</span><span class="spacer"></span><button class="theme-btn">&#9790; Dark</button></div>
+<div class="layout">
+<aside class="side">
+  <input class="search" placeholder="Tìm file...">
+  <a class="home-link" href="../index.html">&#127968; Trang chủ (README)</a>
+  <div class="tree"><ul><li><details><summary>assets</summary><ul><li><a href="../assets/cost-w5.png" target="_blank">cost-w5.png</a></li></ul></details></li><li><details><summary>capstone-phase2</summary><ul><li><details><summary>data</summary><ul><li><details><summary>tf2-finops</summary><ul><li><a href="../capstone-phase2/data/tf2-finops/anomaly_labels_public.csv" target="_blank">anomaly_labels_public.csv</a></li><li><a href="../capstone-phase2/data/tf2-finops/cost_explorer_daily.csv" target="_blank">cost_explorer_daily.csv</a></li><li><a href="../capstone-phase2/data/tf2-finops/cur_line_items.csv" target="_blank">cur_line_items.csv</a></li><li><a href="../capstone-phase2/data/tf2-finops/README.html">README.md</a></li></ul></details></li></ul></details></li><li><details><summary>reference</summary><ul><li><a href="../capstone-phase2/reference/CAPSTONE_EVIDENCE_PACK_FORMAT.html">CAPSTONE_EVIDENCE_PACK_FORMAT.md</a></li><li><a href="../capstone-phase2/reference/TF1_TRIAGE_LEARNER.html">TF1_TRIAGE_LEARNER.md</a></li><li><a href="../capstone-phase2/reference/TF2_FINOPS_LEARNER.html">TF2_FINOPS_LEARNER.md</a></li><li><a href="../capstone-phase2/reference/TF3_SELFHEAL_LEARNER.html">TF3_SELFHEAL_LEARNER.md</a></li><li><a href="../capstone-phase2/reference/TF4_FORESIGHT_LEARNER.html">TF4_FORESIGHT_LEARNER.md</a></li></ul></details></li><li><details><summary>templates</summary><ul><li><details><summary>ai</summary><ul><li><details><summary>contracts</summary><ul><li><a href="../capstone-phase2/templates/ai/contracts/ai-api-contract.html">ai-api-contract.md</a></li><li><a href="../capstone-phase2/templates/ai/contracts/deployment-contract.html">deployment-contract.md</a></li><li><a href="../capstone-phase2/templates/ai/contracts/telemetry-contract.html">telemetry-contract.md</a></li></ul></details></li><li><details><summary>docs</summary><ul><li><a href="../capstone-phase2/templates/ai/docs/01_requirements.html">01_requirements.md</a></li><li><a href="../capstone-phase2/templates/ai/docs/02_solution_design.html">02_solution_design.md</a></li><li><a href="../capstone-phase2/templates/ai/docs/03_ai_engine_spec.html">03_ai_engine_spec.md</a></li><li><a href="../capstone-phase2/templates/ai/docs/04_eval_report.html">04_eval_report.md</a></li><li><a href="../capstone-phase2/templates/ai/docs/05_adrs.html">05_adrs.md</a></li></ul></details></li></ul></details></li><li><details><summary>cdo</summary><ul><li><details><summary>docs</summary><ul><li><a href="../capstone-phase2/templates/cdo/docs/01_requirements_analysis.html">01_requirements_analysis.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/02_infra_design.html">02_infra_design.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/03_security_design.html">03_security_design.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/04_deployment_design.html">04_deployment_design.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/05_cost_analysis.html">05_cost_analysis.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/07_test_eval_report.html">07_test_eval_report.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/08_adrs.html">08_adrs.md</a></li></ul></details></li></ul></details></li><li><a href="../capstone-phase2/templates/README.html">README.md</a></li></ul></details></li><li><a href="../capstone-phase2/W11_W12_capstone_announcement.html">W11_W12_capstone_announcement.md</a></li></ul></details></li><li><details><summary>W1</summary><ul><li><details><summary>schedule</summary><ul><li><a href="../W1/schedule/README.html">README.md</a></li></ul></details></li></ul></details></li><li><details><summary>W2</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W2/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W2/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W2/slides/Bedrock_Overall.pdf" target="_blank">Bedrock_Overall.pdf</a></li><li><a href="../W2/slides/README.html">README.md</a></li></ul></details></li><li><a href="../W2/W2_learner_guide.html">W2_learner_guide.md</a></li><li><a href="../W2/W2_project_announcement.html">W2_project_announcement.md</a></li></ul></details></li><li><details><summary>W3</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W3/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W3/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W3/slides/README.html">README.md</a></li><li><a href="../W3/slides/w3-xbrain.ppt" target="_blank">w3-xbrain.ppt</a></li></ul></details></li><li><a href="../W3/W3_learner_guide_vi.html">W3_learner_guide_vi.md</a></li><li><a href="../W3/W3_learner_guide.html">W3_learner_guide.md</a></li><li><a href="../W3/W3_project_announcement_vi.html">W3_project_announcement_vi.md</a></li><li><a href="../W3/W3_project_announcement.html">W3_project_announcement.md</a></li></ul></details></li><li><details><summary>W4</summary><ul><li><details><summary>data_package</summary><ul><li><details><summary>knowledge_base</summary><ul><li><a href="../W4/data_package/knowledge_base/api_reference_v1_archived.html">api_reference_v1_archived.md</a></li><li><a href="../W4/data_package/knowledge_base/api_reference_v2.html">api_reference_v2.md</a></li><li><a href="../W4/data_package/knowledge_base/api_webhooks.html">api_webhooks.md</a></li><li><a href="../W4/data_package/knowledge_base/architecture_review_feb_2026.html">architecture_review_feb_2026.md</a></li><li><a href="../W4/data_package/knowledge_base/capacity_planning_q2_2026.html">capacity_planning_q2_2026.md</a></li><li><a href="../W4/data_package/knowledge_base/change_management_policy.html">change_management_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/company_overview.html">company_overview.md</a></li><li><a href="../W4/data_package/knowledge_base/cost_optimization_initiative.html">cost_optimization_initiative.md</a></li><li><a href="../W4/data_package/knowledge_base/deployment_policy.html">deployment_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/incident_response_policy.html">incident_response_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/monitoring_dashboard_guide.html">monitoring_dashboard_guide.md</a></li><li><a href="../W4/data_package/knowledge_base/on_call_handbook.html">on_call_handbook.md</a></li><li><a href="../W4/data_package/knowledge_base/onboarding_guide.html">onboarding_guide.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC001_paymentgw_jan.html">postmortem_INC001_paymentgw_jan.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC004_authsvc.html">postmortem_INC004_authsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC005_paymentgw_mar.html">postmortem_INC005_paymentgw_mar.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC006_frauddetector.html">postmortem_INC006_frauddetector.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC008_reportingsvc.html">postmortem_INC008_reportingsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/q1_2026_review_notes.html">q1_2026_review_notes.md</a></li><li><a href="../W4/data_package/knowledge_base/q4_2025_planning_notes.html">q4_2025_planning_notes.md</a></li><li><a href="../W4/data_package/knowledge_base/runbook_frauddetector_model_retraining.html">runbook_frauddetector_model_retraining.md</a></li><li><a href="../W4/data_package/knowledge_base/runbook_paymentgw_circuit_breaker.html">runbook_paymentgw_circuit_breaker.md</a></li><li><a href="../W4/data_package/knowledge_base/security_policy.html">security_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/service_authsvc.html">service_authsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/service_frauddetector.html">service_frauddetector.md</a></li><li><a href="../W4/data_package/knowledge_base/service_notificationsvc.html">service_notificationsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/service_ordersvc.html">service_ordersvc.md</a></li><li><a href="../W4/data_package/knowledge_base/service_paymentgw.html">service_paymentgw.md</a></li><li><a href="../W4/data_package/knowledge_base/service_reportingsvc.html">service_reportingsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/sla_policy.html">sla_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/team_commerce.html">team_commerce.md</a></li><li><a href="../W4/data_package/knowledge_base/team_data.html">team_data.md</a></li><li><a href="../W4/data_package/knowledge_base/team_engagement.html">team_engagement.md</a></li><li><a href="../W4/data_package/knowledge_base/team_platform.html">team_platform.md</a></li><li><a href="../W4/data_package/knowledge_base/tech_radar_2026.html">tech_radar_2026.md</a></li><li><a href="../W4/data_package/knowledge_base/weekly_standup_mar10_2026.html">weekly_standup_mar10_2026.md</a></li></ul></details></li><li><details><summary>scripts</summary><ul><li><a href="../W4/data_package/scripts/monitoring_api.py" target="_blank">monitoring_api.py</a></li><li><a href="../W4/data_package/scripts/pyproject.toml" target="_blank">pyproject.toml</a></li><li><a href="../W4/data_package/scripts/seed_data.py" target="_blank">seed_data.py</a></li></ul></details></li><li><details><summary>structured_data</summary><ul><li><a href="../W4/data_package/structured_data/daily_metrics.csv" target="_blank">daily_metrics.csv</a></li><li><a href="../W4/data_package/structured_data/incidents.csv" target="_blank">incidents.csv</a></li><li><a href="../W4/data_package/structured_data/monthly_costs.csv" target="_blank">monthly_costs.csv</a></li><li><a href="../W4/data_package/structured_data/sla_targets.csv" target="_blank">sla_targets.csv</a></li></ul></details></li><li><a href="../W4/data_package/README.html">README.md</a></li></ul></details></li><li><details><summary>mentoring</summary><ul><li><a href="../W4/mentoring/session1-ai-behind-the-flashy-scene.html">session1-ai-behind-the-flashy-scene.html</a></li><li><a href="../W4/mentoring/session2-genai-in-practice.html">session2-genai-in-practice.html</a></li></ul></details></li><li><details><summary>questions</summary><ul><li><details><summary>student</summary><ul><li><a href="../W4/questions/student/L1_questions.json" target="_blank">L1_questions.json</a></li><li><a href="../W4/questions/student/L2_questions.json" target="_blank">L2_questions.json</a></li><li><a href="../W4/questions/student/L3_questions.json" target="_blank">L3_questions.json</a></li><li><a href="../W4/questions/student/L4_conversation_scripts.json" target="_blank">L4_conversation_scripts.json</a></li><li><a href="../W4/questions/student/L5_investigation_prompts.json" target="_blank">L5_investigation_prompts.json</a></li></ul></details></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W4/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W4/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W4/slides/Agentic AI on AWS Fundamentals.pdf" target="_blank">Agentic AI on AWS Fundamentals.pdf</a></li><li><a href="../W4/slides/AWS Agentic AI Architecture Patterns.pdf" target="_blank">AWS Agentic AI Architecture Patterns.pdf</a></li><li><a href="../W4/slides/README.html">README.md</a></li></ul></details></li><li><a href="../W4/W4_learner_guide_vi.html">W4_learner_guide_vi.md</a></li><li><a href="../W4/W4_learner_guide.html">W4_learner_guide.md</a></li><li><a href="../W4/W4_project_announcement_vi.html">W4_project_announcement_vi.md</a></li><li><a href="../W4/W4_project_announcement.html">W4_project_announcement.md</a></li></ul></details></li><li><details><summary>W5</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W5/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W5/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W5/slides/slides.pdf" target="_blank">slides.pdf</a></li><li><a href="../W5/slides/XBrain_W5_Hard_things_about_your_cloud.pdf" target="_blank">XBrain_W5_Hard_things_about_your_cloud.pdf</a></li></ul></details></li><li><a href="../W5/W5_learner_guide_vi.html">W5_learner_guide_vi.md</a></li><li><a href="../W5/W5_learner_guide.html">W5_learner_guide.md</a></li><li><a href="../W5/W5_project_announcement_vi.html">W5_project_announcement_vi.md</a></li><li><a href="../W5/W5_project_announcement.html">W5_project_announcement.md</a></li></ul></details></li><li><details><summary>W6</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W6/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W6/schedule/README.html">README.md</a></li></ul></details></li><li><a href="../W6/W6_learner_guide_vi.html">W6_learner_guide_vi.md</a></li><li><a href="../W6/W6_learner_guide.html">W6_learner_guide.md</a></li><li><a href="../W6/W6_project_announcement_vi.html">W6_project_announcement_vi.md</a></li><li><a href="../W6/W6_project_announcement.html">W6_project_announcement.md</a></li></ul></details></li><li><details open><summary>W7</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W7/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W7/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W7/slides/README.html">README.md</a></li></ul></details></li><li><details><summary>starter_apps</summary><ul><li><details><summary>budgetbot</summary><ul><li><details><summary>frontend</summary><ul><li><a href="../W7/starter_apps/budgetbot/frontend/index.html">index.html</a></li></ul></details></li><li><details><summary>sample_data</summary><ul><li><a href="../W7/starter_apps/budgetbot/sample_data/bank_statement_q2_2026.csv" target="_blank">bank_statement_q2_2026.csv</a></li><li><a href="../W7/starter_apps/budgetbot/sample_data/README.html">README.md</a></li><li><a href="../W7/starter_apps/budgetbot/sample_data/smoke_test_5_rows.csv" target="_blank">smoke_test_5_rows.csv</a></li></ul></details></li><li><details><summary>src</summary><ul><li><details><summary>adapters</summary><ul><li><a href="../W7/starter_apps/budgetbot/src/adapters/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/adapters/ai.py" target="_blank">ai.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/adapters/factory.py" target="_blank">factory.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/adapters/storage.py" target="_blank">storage.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/adapters/userstore.py" target="_blank">userstore.py</a></li></ul></details></li><li><a href="../W7/starter_apps/budgetbot/src/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/app.py" target="_blank">app.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/config.py" target="_blank">config.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/handlers.py" target="_blank">handlers.py</a></li></ul></details></li><li><details><summary>tests</summary><ul><li><a href="../W7/starter_apps/budgetbot/tests/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/budgetbot/tests/test_smoke.py" target="_blank">test_smoke.py</a></li></ul></details></li><li><a href="../W7/starter_apps/budgetbot/.env.example" target="_blank">.env.example</a></li><li><a href="../W7/starter_apps/budgetbot/.gitignore" target="_blank">.gitignore</a></li><li><a href="../W7/starter_apps/budgetbot/Makefile" target="_blank">Makefile</a></li><li><a href="../W7/starter_apps/budgetbot/README.html">README.md</a></li><li><a href="../W7/starter_apps/budgetbot/requirements-optional.txt" target="_blank">requirements-optional.txt</a></li><li><a href="../W7/starter_apps/budgetbot/requirements.txt" target="_blank">requirements.txt</a></li></ul></details></li><li><details><summary>dochub</summary><ul><li><details><summary>frontend</summary><ul><li><a href="../W7/starter_apps/dochub/frontend/index.html">index.html</a></li></ul></details></li><li><details><summary>sample_data</summary><ul><li><a href="../W7/starter_apps/dochub/sample_data/manifest.json" target="_blank">manifest.json</a></li><li><a href="../W7/starter_apps/dochub/sample_data/SOURCES.html">SOURCES.md</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-acme__agreement__employment_agreement.txt" target="_blank">tenant-acme__agreement__employment_agreement.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-acme__agreement__master_services_agreement.txt" target="_blank">tenant-acme__agreement__master_services_agreement.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-globex__contract__sales_purchase_agreement.txt" target="_blank">tenant-globex__contract__sales_purchase_agreement.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-globex__nda__non_disclosure_agreement.txt" target="_blank">tenant-globex__nda__non_disclosure_agreement.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-initech__addendum__data_processing_addendum.txt" target="_blank">tenant-initech__addendum__data_processing_addendum.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-initech__license__software_license.txt" target="_blank">tenant-initech__license__software_license.txt</a></li></ul></details></li><li><details><summary>src</summary><ul><li><details><summary>adapters</summary><ul><li><a href="../W7/starter_apps/dochub/src/adapters/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/ai.py" target="_blank">ai.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/factory.py" target="_blank">factory.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/storage.py" target="_blank">storage.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/userstore.py" target="_blank">userstore.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/vector.py" target="_blank">vector.py</a></li></ul></details></li><li><a href="../W7/starter_apps/dochub/src/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/dochub/src/app.py" target="_blank">app.py</a></li><li><a href="../W7/starter_apps/dochub/src/config.py" target="_blank">config.py</a></li><li><a href="../W7/starter_apps/dochub/src/handlers.py" target="_blank">handlers.py</a></li></ul></details></li><li><details><summary>tests</summary><ul><li><a href="../W7/starter_apps/dochub/tests/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/dochub/tests/test_smoke.py" target="_blank">test_smoke.py</a></li></ul></details></li><li><a href="../W7/starter_apps/dochub/.env.example" target="_blank">.env.example</a></li><li><a href="../W7/starter_apps/dochub/.gitignore" target="_blank">.gitignore</a></li><li><a href="../W7/starter_apps/dochub/Makefile" target="_blank">Makefile</a></li><li><a href="../W7/starter_apps/dochub/README.html">README.md</a></li><li><a href="../W7/starter_apps/dochub/requirements-optional.txt" target="_blank">requirements-optional.txt</a></li><li><a href="../W7/starter_apps/dochub/requirements.txt" target="_blank">requirements.txt</a></li></ul></details></li><li><details><summary>studybot</summary><ul><li><details><summary>frontend</summary><ul><li><a href="../W7/starter_apps/studybot/frontend/index.html">index.html</a></li></ul></details></li><li><details><summary>sample_data</summary><ul><li><a href="../W7/starter_apps/studybot/sample_data/SOURCES.html">SOURCES.md</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_01_computer.txt" target="_blank">wiki_01_computer.txt</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_02_internet.txt" target="_blank">wiki_02_internet.txt</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_03_mathematics.txt" target="_blank">wiki_03_mathematics.txt</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_04_photosynthesis.txt" target="_blank">wiki_04_photosynthesis.txt</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_05_energy.txt" target="_blank">wiki_05_energy.txt</a></li></ul></details></li><li><details><summary>src</summary><ul><li><details><summary>adapters</summary><ul><li><a href="../W7/starter_apps/studybot/src/adapters/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/ai.py" target="_blank">ai.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/factory.py" target="_blank">factory.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/storage.py" target="_blank">storage.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/userstore.py" target="_blank">userstore.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/vector.py" target="_blank">vector.py</a></li></ul></details></li><li><a href="../W7/starter_apps/studybot/src/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/studybot/src/app.py" target="_blank">app.py</a></li><li><a href="../W7/starter_apps/studybot/src/config.py" target="_blank">config.py</a></li><li><a href="../W7/starter_apps/studybot/src/handlers.py" target="_blank">handlers.py</a></li></ul></details></li><li><details><summary>tests</summary><ul><li><a href="../W7/starter_apps/studybot/tests/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/studybot/tests/test_smoke.py" target="_blank">test_smoke.py</a></li></ul></details></li><li><a href="../W7/starter_apps/studybot/.env.example" target="_blank">.env.example</a></li><li><a href="../W7/starter_apps/studybot/.gitignore" target="_blank">.gitignore</a></li><li><a href="../W7/starter_apps/studybot/Makefile" target="_blank">Makefile</a></li><li><a href="../W7/starter_apps/studybot/README.html">README.md</a></li><li><a href="../W7/starter_apps/studybot/requirements-optional.txt" target="_blank">requirements-optional.txt</a></li><li><a href="../W7/starter_apps/studybot/requirements.txt" target="_blank">requirements.txt</a></li></ul></details></li><li><a href="../W7/starter_apps/README.html">README.md</a></li></ul></details></li><li><a href="../W7/W7_cost_estimates.html">W7_cost_estimates.md</a></li><li><a href="../W7/W7_hackathon_rules.txt" target="_blank">W7_hackathon_rules.txt</a></li><li><a href="../W7/W7_learner_guide.html">W7_learner_guide.md</a></li><li><a href="../W7/W7_project_announcement.html" class="active">W7_project_announcement.md</a></li></ul></details></li><li><details><summary>W8</summary><ul><li><details><summary>exercise_submission</summary><ul><li><a href="../W8/exercise_submission/README.html">README.md</a></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W8/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W8/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W8/slides/README.html">README.md</a></li></ul></details></li><li><a href="../W8/Jira_Working_Rules.html">Jira_Working_Rules.md</a></li><li><a href="../W8/W8_phase2_announcement_cloud.html">W8_phase2_announcement_cloud.md</a></li></ul></details></li><li><details><summary>W9</summary><ul><li><details><summary>exercise_submission</summary><ul><li><a href="../W9/exercise_submission/README.html">README.md</a></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W9/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W9/schedule/README.html">README.md</a></li></ul></details></li><li><a href="../W9/W9_phase2_announcement_cloud.html">W9_phase2_announcement_cloud.md</a></li></ul></details></li><li><details><summary>W10</summary><ul><li><details><summary>exercise_submission</summary><ul><li><a href="../W10/exercise_submission/README.html">README.md</a></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W10/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W10/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W10/slides/README.html">README.md</a></li><li><a href="../W10/slides/w10_afternoon_secrets_supply_chain.html">w10_afternoon_secrets_supply_chain.html</a></li></ul></details></li><li><a href="../W10/W10_phase2_announcement_cloud.html">W10_phase2_announcement_cloud.md</a></li></ul></details></li><li><details><summary>W11</summary><ul><li><details><summary>exercise_submission</summary><ul><li><a href="../W11/exercise_submission/README.html">README.md</a></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W11/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W11/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W11/slides/README.html">README.md</a></li></ul></details></li></ul></details></li><li><a href="../.gitignore" target="_blank">.gitignore</a></li><li><a href="../GUIDELINE.html">GUIDELINE.md</a></li></ul></div>
+</aside>
+<main class="content"><hr />
+<h2 id="week-7-title-w7-capstone-hackathon-ship-production-ready-ai-in-48-hours-audience-students-release-wed-2026-05-28-0900-deadline-fri-2026-05-30-0900-slides-repo-live-url">week: 7
+title: &quot;W7: Capstone Hackathon — Ship Production-Ready AI in 48 Hours&quot;
+audience: students
+release: &quot;Wed 2026-05-28 09:00&quot;
+deadline: &quot;Fri 2026-05-30 09:00 — slides + repo + live URL&quot;</h2>
+<h1 id="w7-capstone-hackathon">W7: Capstone Hackathon</h1>
+<h2 id="ship-production-ready-ai-in-48-hours">Ship Production-Ready AI in 48 Hours</h2>
+<blockquote>
+<p>May 28–31, 2026 | Personal AWS Account | $100 HARD CAP | Demo Day: Fri–Sat 30–31/5 (2 days, presentation-focused)</p>
+</blockquote>
+<hr />
+<h2 id="the-challenge">The Challenge</h2>
+<p>Six weeks ago you drew a box labeled &quot;frontend,&quot; another labeled &quot;backend,&quot; and a third labeled &quot;database,&quot; and called it an architecture. Since then you have filled every one of those boxes with real services, real IAM policies, real network rules, and real data flowing end to end. You chose a database paradigm and justified it. You built a retrieval pipeline on Bedrock. You hardened a VPC. You wired CloudWatch alarms that fire on actual data points. You tagged resources so that Cost Explorer can tell you exactly what your application costs. That is six weeks of compounding skill.</p>
+<p>W7 is the test of whether those skills are yours — not the workshop account's. This week there is no instructor-managed environment to fall back on. No account that resets if you break something. No free infrastructure courtesy of the training program. You are building on personal AWS accounts, paying real money, and you have 48 hours to ship a live, public, production-ready AI SaaS platform. Then you will stand in front of the room on Friday, give a trainer your URL, and watch them interact with your system in real time.</p>
+<p>That sentence deserves to sit for a moment. A trainer will open your URL on their browser — not a screenshot of your URL, not a recording — and they will log in, upload a file, and watch your AI process it. If it works, it works. If the demo URL returns 502 Bad Gateway at 09:00 Friday because someone forgot to check that the Lambda health response passes after cold start, that is visible to everyone in the room. If the budget alert you set never fired because you subscribed to the SNS topic but forgot to confirm the email, that is a gap in your evidence. If the only team member with console access calls in sick Thursday night, that is a single point of failure no one planned for.</p>
+<p>Build toward one sentence: &quot;Trainer, click this link. Log in with this test account. Upload this sample file. Watch the AI process it. That is our system. We built it in 48 hours, on our own AWS account, for under $100.&quot; That sentence is the bar. Every decision you make between Wednesday morning and Friday 09:00 should be judged against whether it gets you closer to saying it confidently.</p>
+<hr />
+<h2 id="whats-different-from-w1-w6">What's Different from W1-W6</h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>W1-W6 Workshop</th>
+<th>W7 Capstone</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AWS account</td>
+<td>Trainer-managed, resets weekly</td>
+<td>Personal account — real billing</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>$0 to students</td>
+<td>Real bill, $100 hard cap (must not exceed)</td>
+</tr>
+<tr>
+<td>Infrastructure teardown</td>
+<td>Automatic (account reset)</td>
+<td>Manual — delete by Sun 1/6 EOD</td>
+</tr>
+<tr>
+<td>Topic</td>
+<td>Group chose domain in W1</td>
+<td>Trainer-given (3 domain options)</td>
+</tr>
+<tr>
+<td>Build window</td>
+<td>5 days per week</td>
+<td>48 hours (Wed-Thu build)</td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td>Optional or partial in early weeks</td>
+<td>Mandatory — public HTTPS URL required</td>
+</tr>
+<tr>
+<td>Carry-forward</td>
+<td>Architecture, design decisions</td>
+<td>W1-W6 skills only (not AWS resources)</td>
+</tr>
+<tr>
+<td>Support</td>
+<td>Trainers guide and teach</td>
+<td>Trainers triage blockers, not write code</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What carries forward:</strong> Everything you know. Nothing you deployed. Workshop accounts are gone. What you bring into W7 is the ability to think in layers — compute, storage, network, monitoring, cost — and the hands-on knowledge of how to wire each one correctly.</p>
+<hr />
+<h2 id="the-project-choose-your-domain">The Project — Choose Your Domain</h2>
+<p>Every group builds an AI-Powered SaaS Platform. The technical stack is identical regardless of domain. What differs is the user story and the type of documents your system processes.</p>
+<hr />
+<h3 id="domain-a-edutech-ai-study-buddy">Domain A — EduTech: &quot;AI Study Buddy&quot;</h3>
+<p><strong>Tagline:</strong> Upload your lecture slides. Get a study guide, flashcard set, and quiz in seconds.</p>
+<p><strong>Target users:</strong> University students, self-learners, exam-prep candidates.</p>
+<p><strong>User stories:</strong></p>
+<ul>
+<li>Upload a 40-slide lecture PDF and receive a one-page summary with the five most testable concepts.</li>
+<li>Ask the system a question about the topic and get an answer with citations back to the specific slide.</li>
+<li>Request a 10-question multiple-choice quiz generated from the uploaded notes.</li>
+<li>Track which topics have been studied this week in a personal dashboard.</li>
+</ul>
+<p><strong>Pick this domain if</strong> your team enjoys prompt engineering challenges and wants a demo that is immediately relatable to any interviewer who has ever been a student.</p>
+<h4 id="core-challenge-document-intelligence">🎯 Core Challenge — Document Intelligence</h4>
+<p>The hard problem is NOT &quot;store + retrieve PDF&quot;. It is: <strong>extract structured information from unstructured slide content</strong> — tables, figures, code blocks, equations, multi-column layouts, image-based slides — and then make it retrievable at the granularity students actually ask questions at.</p>
+<p>What we expect you to demonstrate on Friday:</p>
+<ul>
+<li>A document where text extraction is non-trivial (a slide deck with at least one table, figure caption, or scanned/image page)</li>
+<li>A measured retrieval quality on YOUR content (precision@k or response-relevance Likert on 5+ probe questions)</li>
+<li>A conscious chunking decision with evidence (chunk size trade-off, semantic vs fixed)</li>
+<li>A failure mode you discovered and mitigated (be specific — name a query that broke and what you changed)</li>
+</ul>
+<p>⚠️ <strong>Service bias warning — &quot;PDF&quot; does NOT mean &quot;Textract by default&quot;:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>When it wins</th>
+<th>When it loses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Textract</strong></td>
+<td>Tables + forms heavy; scanned PDFs</td>
+<td>Pure-text PDFs (overpay); cost per page</td>
+</tr>
+<tr>
+<td><strong>Bedrock Anthropic Vision (Claude)</strong></td>
+<td>Figure/diagram heavy; multi-modal slides</td>
+<td>Expensive per page; high latency</td>
+</tr>
+<tr>
+<td><strong>pypdf / pdfplumber + tesseract</strong></td>
+<td>Text-heavy PDFs; runs in Lambda; free</td>
+<td>Weak on image PDFs; no table awareness</td>
+</tr>
+<tr>
+<td><strong>Comprehend</strong></td>
+<td>Post-OCR entity/key-phrase extraction</td>
+<td>Not OCR itself — pairs with another layer</td>
+</tr>
+<tr>
+<td><strong>Hybrid</strong></td>
+<td>Text density threshold → fallback path</td>
+<td>More moving parts</td>
+</tr>
+</tbody>
+</table>
+<p>Trainers reward <strong>less obvious paths justified with measurement</strong>. &quot;We used Textract because default&quot; → low Criterion II/III. &quot;We used pypdf first, fallback to Textract when text density &lt; 100 chars/page, measured 73% pypdf success on our 30-doc sample, saved $0.0011 per upload&quot; → high Criterion II/III.</p>
+<h4 id="real-world-parallels">🌍 Real-world parallels</h4>
+<p>Quizlet AI · Khanmigo (Khan Academy AI tutor) · Coursera Coach · Google NotebookLM · Anthropic Claude for Education.</p>
+<p>Ask yourself during build: <em>&quot;If a Khanmigo engineer reviewed our architecture, what would they immediately point out as wrong/missing/naive?&quot;</em> Document the answer in Evidence Pack §6.5.</p>
+<hr />
+<h3 id="domain-b-fintech-ai-money-coach">Domain B — FinTech: &quot;AI Money Coach&quot;</h3>
+<p><strong>Tagline:</strong> Upload your bank statement. Understand exactly where your money went.</p>
+<p><strong>Target users:</strong> Individuals managing personal budgets, small business owners tracking expenses.</p>
+<p><strong>User stories:</strong></p>
+<ul>
+<li>Upload a three-month PDF bank statement and receive a categorized breakdown: food, transport, subscriptions, unclassified.</li>
+<li>Ask &quot;How much did I spend on food last month?&quot; and get a specific answer with the contributing line items.</li>
+<li>Receive a budget recommendation based on spending pattern and a savings target.</li>
+<li>Set a monthly cap for a category and get an alert when transactions push past it.</li>
+</ul>
+<p><strong>Pick this domain if</strong> your team is comfortable with financial data, enjoys parsing messy CSV inputs, or wants a demo that resonates with business stakeholders.</p>
+<h4 id="core-challenge-dirty-input-classification">🎯 Core Challenge — Dirty Input Classification</h4>
+<p>The hard problem is NOT &quot;call LLM on bank descriptions&quot;. It is: <strong>bank descriptions are cryptic, ambiguous, and routinely sit at the boundary of multiple categories</strong>:</p>
+<ul>
+<li><code>VINMART HCM 04</code> — Food (groceries), Shopping (household), or both?</li>
+<li><code>T1908 GRAB CITY</code> — Transport (ride) or Food (GrabFood)?</li>
+<li><code>FT0024112501 ID:0001</code> — total opacity. What now?</li>
+<li><code>MACBOOK PRO 14 SHOPEE</code> — Shopping for personal? For work? A subscription tier?</li>
+</ul>
+<p>What we expect you to demonstrate on Friday:</p>
+<ul>
+<li>Confidence scoring (model says &quot;Food&quot; — how confident? what threshold triggers human review?)</li>
+<li>Ambiguity handling (user-correctable categories, multi-label support, or review queue)</li>
+<li>A measured classification accuracy on YOUR sample (precision/recall per category on 30+ labeled rows, simple confusion matrix is enough)</li>
+<li>A named failure case + your concrete fix (e.g., &quot;FT0024...&quot; opaque codes → escalate to manual review with confidence &lt; 0.6)</li>
+</ul>
+<p>⚠️ <strong>Service bias warning — &quot;Classify&quot; does NOT mean &quot;Bedrock by default&quot;:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>When it wins</th>
+<th>When it loses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bedrock zero-shot</strong></td>
+<td>Fastest to build; reasonable for clear descriptions</td>
+<td>Weakest on cryptic codes (~$0.50/1K txns)</td>
+</tr>
+<tr>
+<td><strong>Bedrock few-shot (5-10 examples)</strong></td>
+<td>Big accuracy boost with small prompt cost</td>
+<td>Prompt context grows → cost per call up</td>
+</tr>
+<tr>
+<td><strong>Comprehend Custom Classifier</strong></td>
+<td>Cheaper inference at scale; train on labeled data</td>
+<td>Needs labeled training data upfront</td>
+</tr>
+<tr>
+<td><strong>Rule-based + LLM hybrid</strong></td>
+<td>Regex for known prefixes (GRAB → Transport); LLM for ambiguous</td>
+<td>More code paths to maintain</td>
+</tr>
+<tr>
+<td><strong>RAG over user's labeled history</strong></td>
+<td>Personalized to user's correction pattern over time</td>
+<td>Cold-start problem for new users</td>
+</tr>
+<tr>
+<td><strong>Human-in-the-loop review queue</strong></td>
+<td>Recovers from low-confidence cases; learns over time</td>
+<td>Slower path; UX consideration</td>
+</tr>
+</tbody>
+</table>
+<p>Trainers reward &quot;Bedrock few-shot prompt + confusion matrix on 30 labeled rows + 2 named failure cases with fixes&quot; over &quot;we called Bedrock, it works&quot;.</p>
+<h4 id="real-world-parallels-1">🌍 Real-world parallels</h4>
+<p>Money Lover (VN) · Spendee · YNAB · Cake by VPBank (&quot;Cake AI&quot;) · Plaid (data layer) · Monzo (UK) · Revolut spending insights.</p>
+<p>Ask yourself during build: <em>&quot;If we showed our categorizer to a Cake AI engineer, what edge cases would they bring up that we haven't handled?&quot;</em> Document the answer in Evidence Pack §6.5.</p>
+<hr />
+<h3 id="domain-c-productivitytech-ai-document-hub">Domain C — ProductivityTech: &quot;AI Document Hub&quot;</h3>
+<p><strong>Tagline:</strong> Upload any contract, report, or policy doc. Search and ask questions across all of them.</p>
+<p><strong>Target users:</strong> Legal teams, compliance officers, knowledge workers managing large document libraries.</p>
+<p><strong>User stories:</strong></p>
+<ul>
+<li>Upload 20 contracts and ask &quot;Which ones have a termination clause shorter than 30 days?&quot; and receive a filtered list.</li>
+<li>Ask the system to summarize the key obligations in a specific agreement.</li>
+<li>Upload a new policy document and have it immediately searchable alongside all prior documents.</li>
+<li>Different user accounts see only their own document collections — tenant isolation enforced.</li>
+</ul>
+<p><strong>Pick this domain if</strong> your team is interested in enterprise SaaS patterns, multi-tenancy, or building something that mirrors real legal-tech and compliance-tech products.</p>
+<h4 id="core-challenge-multi-tenant-freshness-document-confusion">🎯 Core Challenge — Multi-tenant Freshness + Document Confusion</h4>
+<p>Two genuinely hard problems live in this domain:</p>
+<ol>
+<li><strong>Document confusion</strong> — when 2 contracts in the same tenant use similar language, the AI may cite the wrong contract's clause as evidence. Tenant_id metadata filter is necessary but NOT sufficient.</li>
+<li><strong>Freshness / staleness</strong> — contracts get amended, policies get versioned. How do you guarantee the AI never returns last quarter's version as authoritative when a new one was uploaded yesterday?</li>
+</ol>
+<p>What we expect you to demonstrate on Friday:</p>
+<ul>
+<li>A versioning scheme (S3 versioning / DDB version field / KB metadata tags)</li>
+<li>A confusion-mitigation strategy (aggressive metadata filter, citation strictness, per-doc score threshold)</li>
+<li>A measurement: how often does retrieval pick the wrong document on YOUR sample? Sample 20 queries, manually verify, report wrong-doc rate</li>
+<li>A staleness detection mechanism (last_updated metadata, re-ingestion schedule, version drift alert)</li>
+</ul>
+<p>⚠️ <strong>Service bias warning — &quot;Multi-tenant docs&quot; does NOT mean &quot;Bedrock KB + DynamoDB by default&quot;:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>When it wins</th>
+<th>When it loses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>S3 versioning + KB re-ingest</strong></td>
+<td>Simple, AWS-native</td>
+<td>Re-ingestion cost; tenant_id metadata required separately</td>
+</tr>
+<tr>
+<td><strong>DynamoDB version field + GSI</strong></td>
+<td>Cheap, fine-grained</td>
+<td>Hard to sync to KB metadata; manual eviction logic</td>
+</tr>
+<tr>
+<td><strong>EventBridge scheduled re-sync</strong></td>
+<td>Predictable refresh cadence</td>
+<td>Staleness window = sync interval</td>
+</tr>
+<tr>
+<td><strong>Document hash diff</strong></td>
+<td>Re-ingest only when content actually changed; saves no-op syncs</td>
+<td>More logic to test</td>
+</tr>
+<tr>
+<td><strong>Per-tenant retention policy</strong></td>
+<td>Audit-friendly; legal compliance</td>
+<td>Adds operational complexity</td>
+</tr>
+</tbody>
+</table>
+<p>Trainers reward groups that <strong>named the wrong-document failure mode</strong> and showed concrete mitigation. &quot;Bedrock KB with tenant filter&quot; is the starting line, not the finish line.</p>
+<h4 id="real-world-parallels-2">🌍 Real-world parallels</h4>
+<p>Harvey AI (legal) · Hebbia · Ironclad (contracts) · Glean Workspace · Microsoft Copilot for M365 · Cohere North.</p>
+<p>Ask yourself during build: <em>&quot;If a Harvey AI engineer audited our system, what would they say about how we handle wrong-document returns or stale contracts at 10K docs/tenant?&quot;</em> Document the answer in Evidence Pack §6.5.</p>
+<hr />
+<h2 id="capabilities-7-mandatory-3-optional-pre-flight-safety">Capabilities — 7 Mandatory + 3 Optional + Pre-flight Safety</h2>
+<p>Your system is built in layers. The 7 mandatory capabilities are non-negotiable — every group must demonstrate all of them on Friday. The 3 optional capabilities are bonus opportunities that push your Likert scores higher. The pre-flight safety items are required baseline checks that must be verified by Wednesday sign-off.</p>
+<p>Which specific AWS service implements each capability is your team's decision — that is intentional. On Friday, trainers will ask &quot;why did you pick this service for this capability?&quot; A strong answer connects to trade-offs you discussed in W1-W6. A weak answer is &quot;we used what we knew&quot; with no reasoning.</p>
+<h3 id="mandatory-capabilities-every-group-must-demonstrate">7 Mandatory Capabilities (every group must demonstrate)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Capability</th>
+<th>What your system must do</th>
+<th>Service options taught W1-W6</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>User-Facing Entry</strong></td>
+<td>Public HTTPS entry — static frontend hosting AND/OR the API endpoint that compute sits behind. <strong>EDGE/ENTRY layer, NOT compute.</strong></td>
+<td><strong>Static hosting:</strong> S3+CloudFront · Amplify hosting · ALB+S3 origin · CloudFront with custom origin. <strong>API entry:</strong> API Gateway (HTTP/REST) · ALB · Lambda Function URL · AppSync · App Runner endpoint</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Application Compute</strong></td>
+<td>Where backend code <strong>RUNS</strong> — processes requests, calls AI, executes business logic. <strong>SEPARATE from the API endpoint in #1.</strong></td>
+<td>Lambda · EC2 · ECS/Fargate · App Runner · Step Functions · AppSync resolver code · self-hosted on EC2</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>AI / ML Feature</strong></td>
+<td>At least one intelligent capability working end-to-end</td>
+<td>Bedrock (KB+Agent OR InvokeModel), Comprehend, Rekognition, Textract, SageMaker, etc.</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Data Persistence</strong></td>
+<td>Stores and reads user state across sessions</td>
+<td>RDS, Aurora, DynamoDB, ElastiCache, DocumentDB, Neptune, self-hosted on EC2, etc.</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Object Storage</strong></td>
+<td>Files, blobs, and unstructured data</td>
+<td>S3 (any class)</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Network Foundation</strong></td>
+<td>Resources isolated — DB not public-facing</td>
+<td>VPC + subnets + Security Groups + (optional) NAT/VPC Endpoints</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Identity &amp; Access (baseline)</strong></td>
+<td>IAM least-privilege roles for all services. User-facing auth is optional — choose IAM-only access OR Cognito User Pool OR signed URLs</td>
+<td>IAM roles (required), Cognito, signed URLs, custom JWT, etc.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="common-entrycompute-pairings-each-side-counts-as-a-separate-mandatory-slot">Common entry+compute pairings — each side counts as a SEPARATE mandatory slot</h4>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Mandatory #1 (edge entry)</th>
+<th>Mandatory #2 (compute)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ALB + EC2</td>
+<td>ALB</td>
+<td>EC2</td>
+</tr>
+<tr>
+<td>ALB + ECS/Fargate</td>
+<td>ALB</td>
+<td>ECS/Fargate</td>
+</tr>
+<tr>
+<td>API Gateway + Lambda</td>
+<td>API Gateway</td>
+<td>Lambda</td>
+</tr>
+<tr>
+<td>Lambda Function URL</td>
+<td>Lambda Function URL (built-in HTTPS)</td>
+<td>Lambda (same one)</td>
+</tr>
+<tr>
+<td>App Runner</td>
+<td>App Runner (built-in HTTPS)</td>
+<td>App Runner (same one)</td>
+</tr>
+<tr>
+<td>Amplify hosting + API Gateway + Lambda</td>
+<td>Amplify + API Gateway</td>
+<td>Lambda</td>
+</tr>
+<tr>
+<td>AppSync</td>
+<td>AppSync GraphQL endpoint</td>
+<td>AppSync resolver / Lambda resolver</td>
+</tr>
+<tr>
+<td>CloudFront + ALB + EC2</td>
+<td>CloudFront + ALB</td>
+<td>EC2</td>
+</tr>
+</tbody>
+</table>
+<p>Lambda Function URL, App Runner, AppSync collapse #1 and #2 into one resource — fine, but articulate WHICH role the resource plays during Architecture Walkthrough (the trainer will ask).</p>
+<h3 id="optional-capabilities-bonus-drive-higher-scores-partial-credit">3 Optional Capabilities (bonus — drive higher scores, partial credit)</h3>
+<p>These are not required to pass. Pick ONE and do it well — one done well beats three half-done.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Capability</th>
+<th>No mandatory minimum</th>
+<th>What earns bonus credit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8</td>
+<td><strong>Full Observability</strong></td>
+<td>No minimum required</td>
+<td>Dashboard + at least 1 custom metric (PutMetricData) + at least 1 alarm in OK/ALARM state (not INSUFFICIENT_DATA) + at least 1 saved Log Insights query</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Advanced Cost Insights</strong></td>
+<td>Pre-flight budget alert is required (see below)</td>
+<td>3 daily Cost Explorer screenshots + breakdown observation + cost-per-feature analysis + Cost Anomaly Detection alert demo</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Advanced Security</strong></td>
+<td>IAM least-privilege already mandatory in #7. <strong>Pick ONE area + go deep — no specific service forced.</strong></td>
+<td><strong>Encryption at rest:</strong> KMS CMK + rotation · KMS AWS-managed key · application-layer encryption (libsodium / age / etc.). <strong>Encryption in transit:</strong> TLS 1.2+ everywhere · certificate lifecycle (ACM rotation) · mutual TLS. <strong>Audit &amp; detection:</strong> CloudTrail trail + Config rules · Security Hub · GuardDuty · Inspector. <strong>Secrets:</strong> Secrets Manager + rotation · Parameter Store SecureString · sealed Vault pattern. <strong>Network security:</strong> WAF rules · Shield · Security Group strictness · VPC Flow Logs analysis. Demonstrate WITH measurement (what's encrypted/audited, rotation cadence, alarm trigger count, blocked attempts).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Scoring distinction:</strong> Optional capabilities (8-10) push your baseline Likert scores (Architecture and Deployment criteria) higher. Bonus paths A-H below are separate — they add up to +0.5 on top of your final score. Focus on 7 mandatory rock-solid first, then pick one optional capability to do well, then consider bonus paths if time allows.</p>
+<h3 id="pre-flight-safety-requirements-required-before-deploying-any-paid-infrastructure">Pre-flight Safety Requirements (required before deploying any paid infrastructure)</h3>
+<p>These must be verified at the Wednesday architecture sign-off. Missing any one = group must fix before deploying expensive resources.</p>
+<ul>
+<li>Personal AWS account active with MFA on root</li>
+<li>Budget Alert at $80 (80% of $100 cap) with confirmed SNS email subscription</li>
+<li>Cost Anomaly Detection enabled</li>
+<li>Tagging strategy applied: <code>Project=W7Capstone</code>, <code>Team=G&lt;N&gt;</code>, <code>Owner=&lt;name&gt;</code>, <code>Environment=hackathon</code></li>
+<li>Bedrock model access enabled — request access for the foundation model(s) your team plans to use (Claude family / Llama / Mistral / Titan / Cohere / Jurassic / etc.) + an embeddings model if your AI feature is RAG-based. Pick AFTER comparing prices.</li>
+</ul>
+<p><strong>Required production artifacts (regardless of which services you choose):</strong></p>
+<ul>
+<li>Public HTTPS URL that loads in a trainer's browser</li>
+<li>Working AI feature (real model invocation, observable result in the UI)</li>
+<li>Persistent state (write something Thursday, read it back Friday in a fresh session)</li>
+<li>All 7 mandatory capabilities covered with justified service choices</li>
+</ul>
+<p><strong>Bedrock note:</strong> Use only what was covered in W3-W4. Do not pivot to external LLM APIs. If you learned it before W7, you can use it. If not, focus on what you know.</p>
+<hr />
+<h2 id="hackathon-quality-bar-ship-dont-polish">Hackathon Quality Bar — Ship, Don't Polish</h2>
+<p>This is a 48-hour hackathon, NOT a production launch. Code is allowed to be hackathon-level. Architecture decisions and a working LIVE happy-path demo are what we grade — not code beauty.</p>
+<h3 id="what-is-graded-must-be-solid">What IS graded (must be solid)</h3>
+<table>
+<thead>
+<tr>
+<th>Graded</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Architecture decisions + service rationale (&quot;why this service for this capability?&quot;)</td>
+<td></td>
+</tr>
+<tr>
+<td>7 mandatory capabilities present and working</td>
+<td></td>
+</tr>
+<tr>
+<td>Live URL functional for the happy path</td>
+<td></td>
+</tr>
+<tr>
+<td>AI feature produces real, observable output</td>
+<td></td>
+</tr>
+<tr>
+<td>Persistent state demo (write then read back across sessions)</td>
+<td></td>
+</tr>
+<tr>
+<td>Evidence Pack documentation (screenshots, decisions, cost)</td>
+<td></td>
+</tr>
+<tr>
+<td>Cost discipline (Budget alert + under $100 hard cap + tagging)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="what-is-not-graded-hackathon-level-is-fine">What is NOT graded (hackathon-level is fine)</h3>
+<table>
+<thead>
+<tr>
+<th>NOT graded — do not spend time on this</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Code quality or structure (single-file Lambda is fine)</td>
+<td></td>
+</tr>
+<tr>
+<td>Frontend polish, design, or styling (a basic HTML form is fine)</td>
+<td></td>
+</tr>
+<tr>
+<td>Comprehensive error handling (let errors throw — log to CloudWatch)</td>
+<td></td>
+</tr>
+<tr>
+<td>Unit tests, integration tests, code coverage</td>
+<td></td>
+</tr>
+<tr>
+<td>Edge case handling (happy path is enough)</td>
+<td></td>
+</tr>
+<tr>
+<td>Performance optimization</td>
+<td></td>
+</tr>
+<tr>
+<td>Production-grade auth flow (hardcoded test user is fine for the demo)</td>
+<td></td>
+</tr>
+<tr>
+<td>Mobile responsive design</td>
+<td></td>
+</tr>
+<tr>
+<td>Beautiful slides (functional is better than pretty)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="real-world-parallel">Real-world parallel</h3>
+<p>TechCrunch Disrupt, AWS GameDay, AngelHack, and Y Combinator hackathons all explicitly say &quot;ship, don't polish.&quot; Code quality is irrelevant — what matters is &quot;did you build something that demos.&quot;</p>
+<h3 id="common-over-engineering-traps-to-avoid">Common over-engineering traps to AVOID</h3>
+<ul>
+<li>Building a beautiful React UI when a single HTML form would work the same in 30 minutes</li>
+<li>Setting up Cognito with full signup/login/password reset — use IAM-only auth or a hardcoded test user instead. Cognito is OPTIONAL per capability #7.</li>
+<li>Writing comprehensive error handling for edge cases — just throw and log to CloudWatch</li>
+<li>Refactoring code mid-hackathon (&quot;we should split this Lambda into three&quot; — NO, ship first, refactor in W8 if you survive)</li>
+<li>Spending 2+ hours on slide design when a simple template works</li>
+<li>Writing unit tests during the hackathon</li>
+</ul>
+<h3 id="what-ship-means-concretely">What &quot;ship&quot; means concretely</h3>
+<p>By Friday, your team should be able to do this in one minute live:</p>
+<blockquote>
+<p>&quot;Trainer, click this URL [send link]. The page loads. Click 'Try it'. Type 'hello'. Press submit. Wait 2 seconds. AI response appears on screen. The same response is now saved in our database — we can show you the row. That's our system.&quot;</p>
+</blockquote>
+<p>That is the bar. Architecture and rationale on top of that drive higher tier.</p>
+<hr />
+<h2 id="cost-constraints-100-hard-cap-must-not-exceed">Cost Constraints — $100 HARD CAP (must not exceed)</h2>
+<p>Your personal account, your real bill. Cost discipline is not optional — it is graded and you will be asked about it on Friday.</p>
+<h3 id="pre-flight-safety-setup-complete-before-wednesday-architecture-sign-off-not-optional">Pre-flight safety setup (complete before Wednesday architecture sign-off — not optional)</h3>
+<p>These are verified by your trainer or mentor before you deploy any paid infrastructure. Missing any item = group must fix before sign-off is granted.</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input disabled="disabled" type="checkbox" /> MFA enabled on AWS root account</li>
+<li class="task-list-item"><input disabled="disabled" type="checkbox" /> AWS Budget created at $100 total, alert threshold at $80 (80%) via SNS — confirm the subscription email before you build anything else</li>
+<li class="task-list-item"><input disabled="disabled" type="checkbox" /> Cost Anomaly Detection enabled at the account level (free, ML-based, takes two minutes)</li>
+<li class="task-list-item"><input disabled="disabled" type="checkbox" /> Tagging strategy applied to every resource: <code>Project=W7Capstone</code>, <code>Team=G&lt;N&gt;</code>, <code>Owner=&lt;name&gt;</code>, <code>Environment=hackathon</code></li>
+<li class="task-list-item"><input disabled="disabled" type="checkbox" /> Bedrock model access enabled — request foundation model(s) team chose (Claude / Llama / Mistral / Titan / Cohere / etc.) + embeddings model if RAG-based</li>
+<li class="task-list-item"><input disabled="disabled" type="checkbox" /> Cost Explorer screenshot taken at Day 1 EOD, Day 2 EOD, and Friday morning pre-demo</li>
+</ul>
+<h3 id="cost-discipline-tiers">Cost discipline tiers</h3>
+<table>
+<thead>
+<tr>
+<th>Total spend by Friday</th>
+<th>Status</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Under $30 + clean teardown <strong>AND</strong> Criterion II ≥ 4.0 <strong>AND</strong> Criterion III ≥ 4.0</td>
+<td>Bonus eligible (+0.25)</td>
+<td>Cost + quality gate. Cheap deployment with weak architecture/QnA does NOT qualify. Document trade-offs in Evidence Pack §6.5 (Measurement &amp; Decisions).</td>
+</tr>
+<tr>
+<td>Under $5 total <strong>AND</strong> Criterion II &lt; 4.0</td>
+<td>UNDER-DEPLOYMENT FLAG</td>
+<td>Trainer follow-up required. Single Lambda + DynamoDB at $3 with no observability / no security / no real challenge tackled is NOT cost discipline — it's not deploying enough. Bonus denied, II capped at 2.5.</td>
+</tr>
+<tr>
+<td>$30-60 + clean teardown</td>
+<td>Strong cost discipline</td>
+<td>Cited positively in Part 4</td>
+</tr>
+<tr>
+<td>$60-100</td>
+<td>OK within cap</td>
+<td>Explain your top 3 cost drivers</td>
+</tr>
+<tr>
+<td>Over $100</td>
+<td>HARD CAP EXCEEDED</td>
+<td>Criterion IV capped at 3 — cost discipline failure</td>
+</tr>
+</tbody>
+</table>
+<h3 id="recipe-to-stay-under-100">Recipe to stay under $100</h3>
+<p>The biggest cost traps are services running quietly in the background. None of these individually are catastrophic at the $100 cap, but they add up:</p>
+<ul>
+<li><strong>t3.micro / db.t3.micro</strong> — free-tier eligible, sufficient for demo workloads</li>
+<li><strong>Cheapest sufficient model in dev — compare $/1M tokens BEFORE locking in.</strong> Examples: Claude Haiku $0.25/$1.25 in/out · Sonnet $3/$15 · Llama 3.1 70B $0.30/$0.30 · Titan Text Express $0.30/$0.40 · Cohere Command R $0.50/$1.50 · Mistral Large $4/$12. Upgrade for demo only if quality differential is <strong>measured</strong>, not guessed. Document the comparison in Evidence Pack §6.5.</li>
+<li><strong>Single-AZ RDS</strong> — Multi-AZ doubles database cost. Skip it for the hackathon.</li>
+<li><strong>NAT Gateway costs $1.08/day</strong> — if your Lambda only calls AWS services, use VPC endpoints (Gateway endpoint for S3/DynamoDB, Interface endpoint for Bedrock) instead of a NAT Gateway. If you must use NAT, delete it Thursday EOD.</li>
+<li><strong>KMS: one CMK maximum</strong> — each Customer Managed Key costs $1/month prorated. One key is fine. Five is not.</li>
+<li><strong>Delete unused resources daily</strong> — an idle EC2 from a Wednesday experiment running through Friday is wasted money.</li>
+</ul>
+<h3 id="teardown-mandate">Teardown mandate</h3>
+<p>By Sunday 1/6 EOD, every resource your group created must be deleted. Take a Cost Explorer screenshot Monday 2/6 as confirmation. Commit <code>docs/teardown_confirmation.md</code> to your repo with the list of deleted resources. Failure to teardown means continued personal billing — that is your money, not the program's.</p>
+<hr />
+<h2 id="day-by-day-plan">Day-by-Day Plan</h2>
+<blockquote>
+<p>📝 <strong>Important — Day 1 / Day 2 breakdown below is a SUGGESTED checkpoint rhythm, not a mandate.</strong></p>
+<p>If your team already has its own 48-hour plan, follow that — split the work however you want (sprint at night, work in shifts, parallelize differently, do AI integration on Wed and infra on Thu). <strong>The only hard deadline is Friday 09:00 with a working URL + presentation ready.</strong></p>
+<p>The Day 1 / Day 2 timeline below is here so groups WITHOUT a plan have a default rhythm to follow + so trainers know where to spot-check. Treat it as a checkpoint guide, not a contract.</p>
+</blockquote>
+<h3 id="wednesday-285-day-1-suggested-architecture-lock-7-mandatory-capabilities">Wednesday 28/5 — Day 1 (suggested): Architecture Lock + 7 Mandatory Capabilities</h3>
+<p>The hardest mistake on Day 1 is starting to code before the architecture is agreed. Spend the first 90 minutes planning. Everything after that is faster. Wednesday is purely about getting all 7 mandatory capabilities deployed and connected — do not attempt optional capabilities today.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Goal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>09:00-10:30</td>
+<td>Architecture lock — domain confirmed, diagram drawn, roles assigned, service choices agreed for all 7 mandatory capabilities</td>
+</tr>
+<tr>
+<td>10:30-11:00</td>
+<td>Pre-flight safety verification — Budget alert + Cost Anomaly Detection + tagging + confirm SNS subscription + Bedrock model access</td>
+</tr>
+<tr>
+<td>11:00-13:00</td>
+<td>Foundation — VPC, subnets, security groups, S3 buckets, IAM roles (mandatory #5, #6, #7)</td>
+</tr>
+<tr>
+<td>13:00-14:00</td>
+<td>Break + check current cost</td>
+</tr>
+<tr>
+<td>14:00-16:30</td>
+<td>Core services — API endpoint [#1 edge: API Gateway / ALB / Function URL / etc.] + compute [#2: Lambda / EC2 / Fargate / etc.] + database [#4] in private subnet</td>
+</tr>
+<tr>
+<td>16:30-17:00</td>
+<td>Happy path test: does the API respond? Does the database write/read work? Can Bedrock return something?</td>
+</tr>
+<tr>
+<td>17:00</td>
+<td>Day 1 cost screenshot + commit architecture diagram to repo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Day 1 success state:</strong> API responds. Database is reachable from Lambda. Bedrock InvokeModel returned at least one response in CloudWatch logs. All 7 mandatory capability slots are filled with a named service. No optional capability work yet.</p>
+<h3 id="thursday-295-day-2-suggested-ai-integration-polish-1-optional-capability">Thursday 29/5 — Day 2 (suggested): AI Integration + Polish + 1 Optional Capability</h3>
+<p>Day 2 is where groups that over-scoped Day 1 start cutting. Make your scope decisions by 14:00 — not at 22:00.</p>
+<p><strong>Time budget reality:</strong> You have roughly 16 hours across Wed-Thu. Getting all 7 mandatory capabilities solid takes about 12-14 hours for an organized team. Adding one optional capability takes about 2-3 hours. Adding one bonus path takes about 1-2 hours. Do not try all three optional capabilities — pick one and do it well.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Goal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>09:00-09:30</td>
+<td>Review Day 1 state — what works, what doesn't, what gets cut</td>
+</tr>
+<tr>
+<td>09:30-12:00</td>
+<td>Bedrock integration — KB sync + Agent OR InvokeModel pipeline wired end-to-end (mandatory #3)</td>
+</tr>
+<tr>
+<td>12:00-13:00</td>
+<td>Break + check current cost</td>
+</tr>
+<tr>
+<td>13:00-14:30</td>
+<td>Pick ONE optional capability + tackle: Full Observability (dashboard + custom metric + alarm) OR Advanced Cost Insights (3 screenshots + analysis) OR Advanced Security (your chosen area: encryption / audit / secrets / network)</td>
+</tr>
+<tr>
+<td>14:30-15:30</td>
+<td>Evidence Pack — write sections 1-7 now, not Thursday night</td>
+</tr>
+<tr>
+<td>15:30-16:30</td>
+<td>Demo rehearsal — full end-to-end walkthrough twice. Find the failure modes before Friday finds them.</td>
+</tr>
+<tr>
+<td>16:30-17:00</td>
+<td>Day 2 cost screenshot + slides finalized + repo pushed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Day 2 success state:</strong> Trainer can click your URL, upload a file, see the AI result. One optional capability is demonstrably working. Evidence Pack is 80% written. Demo has been run at least twice.</p>
+<h3 id="frisat-30315-demo-day">Fri–Sat 30–31/5 — Demo Day</h3>
+<p>Slides, repo, and live URL ready by 09:00. Use the morning before your slot to rehearse on a fresh browser with cleared cookies.</p>
+<hr />
+<h2 id="what-friday-part-2-looks-like-showing-your-work">What Friday Part 2 Looks Like — Showing Your Work</h2>
+<p>Friday Part 2 (Architecture Walkthrough) is where you walk the trainer through what you built. The walkthrough structure:</p>
+<p><strong>Part 1 (first): 7 Mandatory Capabilities — trainer verifies baseline</strong>
+The trainer checks all 7 mandatory capabilities are working. Show each one — the live URL, the AI responding, the database reading back state, the network isolation (DB not public-facing), the S3 bucket, the IAM roles scoped to least-privilege. All 7 must be demonstrable. This is the baseline for scoring.</p>
+<p><strong>Part 2 (second): Optional capability attempted</strong>
+After the 7 mandatory, tell the trainer which optional capability your group attempted (Full Observability, Advanced Cost Insights, or Advanced Security). Show what you built. Partial progress counts — a custom metric that is publishing data but no alarm yet is worth more than nothing. One optional done well drives your Likert scores higher than three half-done optionals.</p>
+<p><strong>The non-negotiables every group must show:</strong></p>
+<p><strong>1. Live URL (HTTPS, accessible from trainer's browser)</strong>
+Not localhost. Not a screenshot. A public URL that loads in any browser with no VPN or special setup. CloudFront gives you HTTPS on the default <code>*.cloudfront.net</code> domain for free.</p>
+<p><strong>2. Working AI feature with real Bedrock invocation</strong>
+Not the Bedrock playground. A real API call from your application — through a Knowledge Base retrieve-and-generate, an Agent invocation, or a direct InvokeModel call — with an observable result in the UI. The trainer will ask which model, which parameters, and what the response structure looks like.</p>
+<p><strong>3. Persistent state — write then read back</strong>
+Write something on Thursday. On Friday, access it in a fresh session and confirm it is still there and readable. State that does not survive a session boundary is not persistent state.</p>
+<p><strong>4. Network isolation — DB not public-facing</strong>
+Show the trainer that your database is in a private subnet with a security group that only allows the compute layer (Lambda SG or EC2 SG) to connect. A database with inbound <code>0.0.0.0/0</code> is a security failure visible in 30 seconds.</p>
+<p><strong>5. Cost discipline evidence via Cost Explorer</strong>
+Open Cost Explorer, filter by your <code>Team=G&lt;N&gt;</code> tag, show the breakdown. Three daily screenshots in the Evidence Pack. A number in your slide deck: &quot;we spent $X over two days, top drivers were Y and Z.&quot; Groups that cannot show a cost breakdown in Part 4 will face sharp follow-up questions.</p>
+<hr />
+<h2 id="worked-examples-three-reference-architectures">Worked Examples — Three Reference Architectures</h2>
+<p>These show one possible way each domain could be implemented. Your team may choose different services to cover the same capabilities — that is encouraged. On Friday, be ready to explain why your choices fit your use case better than the alternatives. Each example stays well under $100.</p>
+<hr />
+<h3 id="reference-a-edutech-studybot-one-possible-approach">Reference A — EduTech: &quot;StudyBot&quot; (one possible approach)</h3>
+<p>This example covers all 7 mandatory capabilities and demonstrates Full Observability as the chosen optional capability. This is one possible approach — your team may choose different services for any mandatory capability, and a different optional capability entirely.</p>
+<p><strong>Mandatory capabilities covered (#1-7):</strong>
+[#1 UI — static] CloudFront + S3 static site → [#1 UI — API entry] API Gateway HTTP API → [#2 Compute] Lambda Python 3.12 → [#3 AI/ML] Bedrock Knowledge Base + chosen foundation model (Haiku is one option — pick after comparison) retrieve-and-generate → [#4 Data] DynamoDB session/user state. [#5 Object Storage] S3 document bucket (encryption strategy: your choice — SSE-S3 default / SSE-KMS / CMK + rotation). [#6 Network] VPC: Lambda in private subnet, DynamoDB via Gateway Endpoint, Bedrock via Interface Endpoint. [#7 Identity baseline] IAM Lambda execution role scoped to specific actions on specific ARNs.</p>
+<p><strong>Optional capability attempted: Full Observability (#8)</strong>
+CloudWatch: custom metric <code>StudyBot/DocumentsIngested</code> published after each successful KB sync (PutMetricData), alarm on Lambda <code>Errors</code> metric in OK state by Thursday afternoon, Log Insights query saved to filter errors in the last hour.</p>
+<p>Your team may choose differently — e.g., EC2 instead of Lambda, RDS instead of DynamoDB, or Advanced Security as your optional capability instead of Full Observability. The requirement is covering all 7 mandatory capabilities with justified choices plus one optional attempted well.</p>
+<p><strong>Key service decisions in this example:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DynamoDB over RDS</td>
+<td>User session state (quiz scores, last studied topic, quiz attempts) is always a single-key lookup by <code>user_id</code>. No JOINs, no aggregations. DynamoDB on-demand capacity handles variable load with zero provisioning.</td>
+</tr>
+<tr>
+<td>Bedrock KB (RAG) over pure InvokeModel</td>
+<td>The core feature is answering questions about a user's specific uploaded document. RAG retrieves the relevant chunks from that document and grounds the generation — no hallucination on content the user uploaded. InvokeModel without retrieval has no access to the document content at generation time.</td>
+</tr>
+<tr>
+<td>CloudFront default domain</td>
+<td>HTTPS on <code>*.cloudfront.net</code> requires zero certificate setup. Saves 30 minutes on Day 1 and $0 extra. Adopt custom domain only if going for Bonus Path C.</td>
+</tr>
+<tr>
+<td>S3 Vectors as KB vector store</td>
+<td>No minimum OCU charge unlike OpenSearch Serverless. Purpose-built for Bedrock KB. Available in us-east-1 and ap-southeast-1.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Data flow:</strong>
+User uploads PDF via UI → API Gateway POST <code>/upload</code> → Lambda → S3 PutObject (KMS CMK encrypted, <code>kb-source/{user_id}/{doc_id}.pdf</code>) → Lambda triggers Bedrock KB StartIngestionJob (async) → Bedrock chunks and embeds document → Stored in S3 Vectors index. On query: user types question → API Gateway POST <code>/query</code> → Lambda → Bedrock <code>retrieve_and_generate</code> with <code>user_id</code> filter → Bedrock retrieves top-K chunks from user's documents → Claude Haiku generates answer with citations → Lambda writes query event to DynamoDB (session log) → Response with answer + source citations returned to UI.</p>
+<p><strong>Sample Bedrock prompt:</strong></p>
+<pre><code>System: You are a study assistant. Answer questions using ONLY the provided context from
+the student's uploaded lecture notes. Always cite the source by document name and chunk
+number. If the answer is not in the provided context, say exactly:
+&quot;This topic is not covered in your uploaded notes.&quot;
+Do not make up information.
+
+User: [Question from student]
+Context: [Retrieved chunks from Bedrock KB]
+</code></pre>
+<p><strong>Estimated cost breakdown (48 hours, ap-southeast-1 Singapore list price):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Calculation</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lambda</td>
+<td>200 invocations × 512MB × 2s = 200 GB-sec</td>
+<td>$0.004</td>
+</tr>
+<tr>
+<td>API Gateway HTTP</td>
+<td>500 requests</td>
+<td>$0.001</td>
+</tr>
+<tr>
+<td>Bedrock Claude 3.5 Haiku (KB retrieve+generate)</td>
+<td>500K input @ $1/M + 50K output @ $5/M</td>
+<td>$0.75</td>
+</tr>
+<tr>
+<td>Bedrock Titan Text Embeddings v2 (ingestion)</td>
+<td>1M tokens @ $0.02/M</td>
+<td>$0.02</td>
+</tr>
+<tr>
+<td>S3 Vectors (KB vector store)</td>
+<td>100MB + ~500 queries</td>
+<td>$0.01</td>
+</tr>
+<tr>
+<td>DynamoDB on-demand</td>
+<td>~500 reads + 200 writes</td>
+<td>$0.001</td>
+</tr>
+<tr>
+<td>S3 (documents + static)</td>
+<td>100MB + ~500 PUT/GET</td>
+<td>$0.01</td>
+</tr>
+<tr>
+<td>CloudFront (Asia tier)</td>
+<td>1GB outbound @ $0.085/GB</td>
+<td>$0.09</td>
+</tr>
+<tr>
+<td>KMS CMK</td>
+<td>1 key × $1/month prorated 48h</td>
+<td>$0.07</td>
+</tr>
+<tr>
+<td>VPC Interface Endpoint (Bedrock, Singapore)</td>
+<td>$0.013/hr × 48h</td>
+<td>$0.62</td>
+</tr>
+<tr>
+<td><strong>Total estimate (S3 Vectors path)</strong></td>
+<td></td>
+<td><strong>~$1.57 — 1.6% of $100 cap</strong></td>
+</tr>
+<tr>
+<td><strong>Alt: OpenSearch Serverless path</strong></td>
+<td>2 OCU × $0.288/hr × 48h replaces S3 Vectors</td>
+<td><strong>~$29.20 — 29% of $100 cap</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Detailed line-by-line breakdown + worst-case scenarios: <a href="./W7_cost_estimates.html"><code>W7_cost_estimates.md</code></a>.</p>
+</blockquote>
+<hr />
+<h3 id="reference-b-fintech-budgetbot-one-possible-approach">Reference B — FinTech: &quot;BudgetBot&quot; (one possible approach)</h3>
+<p>This example covers all 7 mandatory capabilities and demonstrates Advanced Cost Insights as the chosen optional capability. This is one possible approach — your team may pick different services and a different optional capability.</p>
+<p><strong>Mandatory capabilities covered (#1-7):</strong>
+[#1 UI — static] CloudFront + S3 static site → [#1 UI — API entry] API Gateway REST API → [#2 Compute] Lambda Python 3.12 → [#3 AI/ML] Bedrock InvokeModel + chosen foundation model (Haiku is one option) JSON categorization → [#4 Data] RDS PostgreSQL db.t3.micro transaction records. [#5 Object Storage] S3 upload bucket. [#6 Network] VPC: Lambda in private subnet, RDS in private subnet, SG references Lambda SG not CIDR. [#7 Identity baseline] IAM Lambda execution role with specific DynamoDB and Bedrock actions only.</p>
+<p><strong>Optional capability attempted: Advanced Cost Insights (#9)</strong>
+Three daily Cost Explorer screenshots (Day 1 EOD / Day 2 EOD / Friday morning), written observation per screenshot explaining spend trend, cost-per-feature analysis in Evidence Pack (Lambda cost per 1000 API calls vs Bedrock token cost per categorization batch), Cost Anomaly Detection alert demo.</p>
+<p>Your team may choose differently — e.g., DynamoDB if your analysis queries are simpler key-value lookups, or ECS Fargate if your backend needs a long-running process for CSV parsing. What matters is that you can justify the trade-off.</p>
+<p><strong>Key service decisions in this example:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RDS PostgreSQL over DynamoDB</td>
+<td>Spending analysis requires SQL: <code>SELECT category, SUM(amount) FROM transactions WHERE user_id=? AND EXTRACT(MONTH FROM date)=? GROUP BY category</code>. DynamoDB cannot do multi-attribute aggregations without a Scan — too slow and expensive at scale.</td>
+</tr>
+<tr>
+<td>Direct InvokeModel over KB</td>
+<td>The AI task is one-shot classification of a transaction string, not retrieval from a document corpus. You construct the prompt (&quot;categorize this transaction: ...&quot;) and send it. No retrieval step needed.</td>
+</tr>
+<tr>
+<td>RDS Proxy</td>
+<td>Lambda can spawn 50+ concurrent invocations during a burst. Each opens a DB connection. db.t3.micro max connections ≈ 85. RDS Proxy pools connections and multiplexes — prevents &quot;FATAL: remaining connection slots are reserved&quot; errors mid-demo.</td>
+</tr>
+<tr>
+<td>Single-AZ RDS</td>
+<td>Multi-AZ doubles database cost ($0.036/hr → $0.072/hr). For a 48-hour hackathon, the failover protection is not worth $1.73. Document this trade-off explicitly in the Evidence Pack.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Data flow:</strong>
+User uploads CSV bank statement → S3 PutObject trigger → Lambda parses CSV rows (pandas or csv module) → for each transaction row: call Bedrock InvokeModel with categorization prompt → receive JSON <code>{&quot;category&quot;: &quot;Food&quot;, &quot;confidence&quot;: &quot;high&quot;}</code> → batch INSERT to RDS <code>transactions</code> table → DML completes → UI refreshes. On query: user asks &quot;spending summary for May&quot; → API Gateway GET <code>/summary?month=2026-05</code> → Lambda → <code>SELECT category, SUM(amount), COUNT(*) FROM transactions WHERE user_id=? AND date_trunc('month', date)=?::date GROUP BY category ORDER BY SUM(amount) DESC</code> → chart data to frontend.</p>
+<p><strong>Sample Bedrock prompt:</strong></p>
+<pre><code>Categorize the following bank transaction into exactly one category.
+Categories: Food, Transport, Shopping, Utilities, Entertainment, Health, Subscriptions, Income, Transfer, Other
+
+Transaction: &quot;{transaction_description}&quot;
+Amount: {amount}
+Date: {date}
+
+Respond with JSON only. No explanation.
+{&quot;category&quot;: &quot;&lt;category&gt;&quot;, &quot;confidence&quot;: &quot;high|medium|low&quot;}
+</code></pre>
+<p><strong>Estimated cost breakdown (48 hours, ap-southeast-1 Singapore list price):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Calculation</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lambda</td>
+<td>500 invocations × 512MB × 3s = 750 GB-sec</td>
+<td>$0.012</td>
+</tr>
+<tr>
+<td>API Gateway REST</td>
+<td>500 requests @ $3.50/M</td>
+<td>$0.002</td>
+</tr>
+<tr>
+<td>Bedrock Claude 3.5 Haiku (InvokeModel)</td>
+<td>2000 txns × 150 input + 30 output = 300K input + 60K output</td>
+<td>$0.60</td>
+</tr>
+<tr>
+<td>RDS db.t3.micro PostgreSQL single-AZ (Singapore)</td>
+<td>$0.026/hr × 48h</td>
+<td>$1.25</td>
+</tr>
+<tr>
+<td>RDS gp3 storage</td>
+<td>20GB × $0.138/GB-month × (48/720)</td>
+<td>$0.18</td>
+</tr>
+<tr>
+<td>RDS Proxy</td>
+<td>$0.018/hr × 48h</td>
+<td>$0.86</td>
+</tr>
+<tr>
+<td>S3 (statements + static)</td>
+<td>10MB + ~200 PUT/GET</td>
+<td>$0.002</td>
+</tr>
+<tr>
+<td>CloudFront (Asia tier)</td>
+<td>500MB outbound</td>
+<td>$0.04</td>
+</tr>
+<tr>
+<td>KMS CMK</td>
+<td>1 key prorated 48h</td>
+<td>$0.07</td>
+</tr>
+<tr>
+<td>VPC Interface Endpoint (Bedrock, Singapore)</td>
+<td>$0.013/hr × 48h</td>
+<td>$0.62</td>
+</tr>
+<tr>
+<td><strong>Total estimate</strong></td>
+<td></td>
+<td><strong>~$3.65 — 3.7% of $100 cap</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>The biggest cost driver here is RDS (instance + proxy + storage = $2.29), not the AI. See <a href="./W7_cost_estimates.html"><code>W7_cost_estimates.md</code></a>.</p>
+</blockquote>
+<hr />
+<h3 id="reference-c-productivitytech-dochub-one-possible-approach">Reference C — ProductivityTech: &quot;DocHub&quot; (one possible approach)</h3>
+<p>This example covers all 7 mandatory capabilities and demonstrates Advanced Security as the chosen optional capability. This is one possible approach — your team may pick different services and a different optional capability.</p>
+<p><strong>Mandatory capabilities covered (#1-7):</strong>
+[#1 UI — static] CloudFront + S3 static site → [#1 UI — API entry] API Gateway → [#2 Compute] Lambda → [#3 AI/ML] Bedrock Agent with Lambda action group + Bedrock Knowledge Base + chosen vector store (S3 Vectors is one option) with <code>tenant_id</code> metadata filter → [#4 Data] DynamoDB document metadata PK=<code>tenant_id</code> SK=<code>doc_id</code>. [#5 Object Storage] S3 document bucket per-tenant prefixes. [#6 Network] VPC: Lambda in private subnet, DynamoDB via Gateway Endpoint, Bedrock via Interface Endpoint. [#7 Identity baseline] IAM Lambda execution role with least-privilege Bedrock + S3 + DynamoDB actions.</p>
+<p><strong>Optional capability attempted: Advanced Security (#10)</strong>
+KMS Customer Managed Key applied to S3 document bucket + DynamoDB table encryption with CMK. Key rotation enabled. AWS Config rule deployed to check S3 Block Public Access is enabled. CloudTrail events confirm KMS GenerateDataKey calls on each document upload.</p>
+<p>Your team may choose differently — e.g., RDS for document metadata if your query patterns need complex filtering, or Full Observability as your optional capability instead of Advanced Security. Scope discipline matters more than using the most complex service.</p>
+<p><strong>Key service decisions in this example:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bedrock Agent over pure KB retrieve</td>
+<td>Agent enables tool use — the action group exposes a &quot;list documents by type&quot; Lambda tool. User can ask &quot;show me only contracts&quot; and the Agent decides to call the tool, then retrieve from the filtered result set. A pure KB retrieve call cannot dynamically filter before retrieval.</td>
+</tr>
+<tr>
+<td>KB metadata filtering for tenant isolation</td>
+<td>Every document is ingested with <code>metadata={&quot;tenant_id&quot;: &quot;tenant-123&quot;, &quot;doc_type&quot;: &quot;contract&quot;}</code>. Every retrieve call includes <code>retrievalConfiguration.vectorSearchConfiguration.filter = {&quot;equals&quot;: {&quot;key&quot;: &quot;tenant_id&quot;, &quot;value&quot;: current_tenant_id}}</code>. Isolation is enforced at the vector search layer — a bug in application code cannot leak cross-tenant results because the retrieval itself is filtered.</td>
+</tr>
+<tr>
+<td>DynamoDB for document metadata</td>
+<td>Tenant document library is always queried as &quot;all docs for tenant X, sorted by uploaded_at&quot; — DynamoDB GSI with PK=<code>tenant_id</code>, SK=<code>uploaded_at</code> serves this with a single Query, no scan.</td>
+</tr>
+<tr>
+<td>S3 Vectors over OpenSearch Serverless</td>
+<td>OpenSearch Serverless minimum: 2 OCU × $0.24/hr = $5.76/day = $11.52 over 48 hours. S3 Vectors has no minimum OCU charge. For a $100 cap, OpenSearch Serverless is still feasible but consumes a large share of the budget on infrastructure alone — plan accordingly.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Data flow:</strong>
+User logs in → Cognito issues JWT with <code>custom:tenant_id=tenant-123</code> → user uploads contract PDF → API Gateway POST <code>/upload</code> with JWT → Lambda extracts <code>tenant_id</code> from JWT (<code>cognito:custom:tenant_id</code>) → S3 PutObject to <code>tenant-123/docs/{doc_id}.pdf</code> → Bedrock KB StartIngestionJob with metadata <code>{&quot;tenant_id&quot;: &quot;tenant-123&quot;, &quot;doc_type&quot;: &quot;contract&quot;}</code> → DynamoDB PutItem for document metadata → On query: user asks &quot;what are the penalty clauses?&quot; → Lambda → Bedrock Agent InvokeAgent with session context and tenant_id → Agent decides: call KB retrieve filtered by <code>tenant_id=tenant-123</code> → retrieve top-K chunks → Claude Haiku generates answer with source citations → response to UI with document name + page reference.</p>
+<p><strong>Sample Bedrock prompt (Agent system prompt):</strong></p>
+<pre><code>You are a document intelligence assistant for a multi-tenant SaaS platform.
+You only have access to documents belonging to the current user's organization.
+NEVER reference documents from other organizations.
+When answering, always cite the document name and the relevant section.
+If you cannot find the answer in the available documents, say:
+&quot;I could not find this information in your organization's documents.&quot;
+Use the list_documents tool to find available documents by type before answering
+questions that reference specific document categories.
+</code></pre>
+<p><strong>Estimated cost breakdown (48 hours, ap-southeast-1 Singapore list price):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Calculation</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lambda (main + action group)</td>
+<td>300 invocations × 1024MB × 5s = 1,500 GB-sec</td>
+<td>$0.025</td>
+</tr>
+<tr>
+<td>API Gateway HTTP</td>
+<td>300 requests</td>
+<td>$0.0003</td>
+</tr>
+<tr>
+<td>Bedrock Claude 3.5 Haiku (Agent + KB)</td>
+<td>50 queries × 3K retrieve + 500 generate = 150K input + 25K output</td>
+<td>$0.28</td>
+</tr>
+<tr>
+<td>Bedrock Titan Text Embeddings v2 (ingestion of 20 docs)</td>
+<td>2M tokens @ $0.02/M</td>
+<td>$0.04</td>
+</tr>
+<tr>
+<td>S3 Vectors (KB vector store)</td>
+<td>200MB + ~50 queries</td>
+<td>$0.01</td>
+</tr>
+<tr>
+<td>DynamoDB on-demand</td>
+<td>~300 reads + 100 writes</td>
+<td>$0.0003</td>
+</tr>
+<tr>
+<td>S3 (documents + static)</td>
+<td>200MB + ~400 PUT/GET</td>
+<td>$0.01</td>
+</tr>
+<tr>
+<td>CloudFront (Asia tier)</td>
+<td>1GB outbound</td>
+<td>$0.09</td>
+</tr>
+<tr>
+<td>KMS CMK</td>
+<td>1 key prorated 48h</td>
+<td>$0.07</td>
+</tr>
+<tr>
+<td>Cognito User Pool</td>
+<td>&lt;100 MAU (free tier up to 50K)</td>
+<td>FREE</td>
+</tr>
+<tr>
+<td>VPC Interface Endpoints × 2 (Bedrock + Secrets Manager, Singapore)</td>
+<td>2 × $0.013/hr × 48h</td>
+<td>$1.25</td>
+</tr>
+<tr>
+<td><strong>Total estimate (S3 Vectors path)</strong></td>
+<td></td>
+<td><strong>~$1.77 — 1.8% of $100 cap</strong></td>
+</tr>
+<tr>
+<td><strong>Alt: OpenSearch Serverless path</strong></td>
+<td>2 OCU × $0.288/hr × 48h (Singapore)</td>
+<td><strong>~$29.40 — 29% of $100 cap</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Warning — OpenSearch Serverless cost:</strong> Check S3 Vectors availability in <code>ap-southeast-1</code> before locking the design. If S3 Vectors is not available in your selected region, OpenSearch Serverless adds ~$27.65 (2 OCU × $0.288/hr × 48h in Singapore; ~$23.04 in us-east-1). With the $100 cap that is still comfortable (~29% of budget), but it is your single largest fixed cost — leave it at default minimum OCU, do not over-provision, and delete the collection immediately after Friday demo. Detailed breakdown in <a href="./W7_cost_estimates.html"><code>W7_cost_estimates.md</code></a>.</p>
+</blockquote>
+<hr />
+<h2 id="evidence-pack-docsw7_evidence.md">Evidence Pack — <code>docs/W7_evidence.md</code></h2>
+<p>This file lives in your GitHub repo. It is the graded artifact for Criterion IV. Build it during the build — a screenshot at 14:00 Wednesday is always more credible than one reconstructed Thursday night.</p>
+<p><strong>Required sections:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Cover</strong></td>
+<td>Group number, member names, live URL, repo link, domain choice, total spend</td>
+</tr>
+<tr>
+<td><strong>2. Pitch and Vision</strong></td>
+<td>Use case (2-3 sentences), target user, why this domain matters</td>
+</tr>
+<tr>
+<td><strong>3. Architecture</strong></td>
+<td>Final diagram (reflects what is deployed), service decisions table, 2-3 conscious trade-offs</td>
+</tr>
+<tr>
+<td><strong>4. Cost Discipline</strong></td>
+<td>3 cost screenshots (Day 1 EOD / Day 2 EOD / Friday pre-demo), breakdown by service, written observation</td>
+</tr>
+<tr>
+<td><strong>5. Security</strong></td>
+<td>IAM roles + compute execution role scope (required) + the security area from your Optional #10 choice (encryption / audit / secrets / network) with concrete evidence: policy screenshot, log event, rotation status, alarm trigger, or VPC Flow Log sample. <strong>No specific service mandated — pick what fits.</strong></td>
+</tr>
+<tr>
+<td><strong>6. Monitoring</strong></td>
+<td>CloudWatch dashboard screenshot, alarm config, Log Insights query with real results</td>
+</tr>
+<tr>
+<td><strong>6.5 Measurement &amp; Decisions</strong> ★</td>
+<td><strong>NEW — required.</strong> At least 2 architectural decisions using the structured template below. Boilerplate / vague text will be flagged as &quot;đối phó&quot; by trainer + by Claude during pre-review. See full spec below the table.</td>
+</tr>
+<tr>
+<td><strong>7. Lessons Learned</strong></td>
+<td>200 words: what went well, what you'd do differently, what surprised you. Should reference real-world parallel and one concrete failure case.</td>
+</tr>
+<tr>
+<td><strong>8. Teardown Plan</strong></td>
+<td>Ordered list of resources to delete + CLI commands or CFN delete command</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="section-6.5-measurement-decisions-required-anti-oi-pho">Section 6.5 — Measurement &amp; Decisions (Required, anti-đối phó)</h3>
+<p>This section exists because of a real lesson from W6: groups built features just to check rubric boxes, not because they thought about real users or measured what worked. W7 fixes that by requiring <strong>structured proof</strong> of at least 2 architectural decisions.</p>
+<p><strong>Required template — one block per decision (minimum 2 decisions):</strong></p>
+<pre><code>DECISION: [What you chose — be specific. &quot;Bedrock Haiku&quot; is too vague.
+           &quot;Bedrock Haiku for transaction classification because cost &lt; accuracy threshold&quot; is better.]
+
+ALTERNATIVES CONSIDERED:
+- [Option A] — eliminated because: [concrete reason with a number or observation]
+- [Option B] — eliminated because: [concrete reason]
+(at least 2 alternatives — single-option &quot;decisions&quot; are not decisions)
+
+MEASUREMENT:
+- [Metric 1] = [number with unit] — [how you measured]
+- [Metric 2] = [number with unit] — [how you measured]
+(at least 1 measurement with a real number)
+
+EVIDENCE:
+- [Screenshot path / Cost Explorer link / CloudWatch metric / spreadsheet / log query]
+(at least 1 piece of evidence — claims without proof score 0 for that decision)
+
+TRADE-OFF ACCEPTED:
+- [What you gave up by choosing this path — be specific]
+</code></pre>
+<p><strong>✓ Acceptable example (passes the gate):</strong></p>
+<pre><code>DECISION: Use pypdf for text-extractable PDFs, fall back to Textract only when text density
+          per page &lt; 100 characters.
+
+ALTERNATIVES CONSIDERED:
+- Textract everywhere — eliminated: Textract costs $0.0015/page × 200 pages/day = $0.30/day
+  excess vs pypdf $0; we measured 73% of our 30 test PDFs were text-extractable.
+- Bedrock Vision (Claude reads page images) — eliminated: 2.3s/page latency vs pypdf 0.05s;
+  cost ~$0.04/page vs $0; only justified for figure-heavy decks.
+
+MEASUREMENT:
+- pypdf success rate on our 30 sample PDFs = 73% (22/30 had clean text extraction)
+- Cost saved per 1000 uploads = $0.80 vs Textract-everywhere
+- Hybrid latency: p50 = 0.4s, p99 = 2.1s
+
+EVIDENCE:
+- `docs/evidence/pdf_extraction_benchmark.xlsx` — 30 sample PDFs scored
+- CloudWatch screenshot of Lambda duration histogram (`docs/evidence/lambda_duration.png`)
+
+TRADE-OFF ACCEPTED:
+- pypdf cannot read tables-as-images. 8% of uploads hit this path and re-process via
+  Textract on demand. Lambda fallback duration p99 spikes to 2.1s when this fires.
+</code></pre>
+<p><strong>✗ Anti-pattern (will be flagged as đối phó — score 0 for this block):</strong></p>
+<pre><code>DECISION: We use Bedrock Haiku.
+ALTERNATIVES: We considered Sonnet but Haiku is cheaper.
+MEASUREMENT: It works.
+EVIDENCE: See repo.
+TRADE-OFF: None.
+</code></pre>
+<p><strong>Why anti-đối phó signals are graded:</strong></p>
+<p>The Evidence Pack is YOUR proof that you thought about the problem, not just shipped to a deadline. Trainers and Claude will compare each block against the anti-pattern above. Specific signals that earn credit:</p>
+<ol>
+<li><strong>Decision provenance</strong> — not &quot;we chose X&quot; but &quot;we considered A/B/C, eliminated B because [Y measurement], eliminated C because [Z constraint], chose A&quot;</li>
+<li><strong>Concrete numbers</strong> — <code>$0.04/page</code>, <code>73%</code>, <code>2.1s p99</code>, <code>30 sample PDFs</code>, NOT &quot;cheap&quot;, &quot;fast&quot;, &quot;good enough&quot;</li>
+<li><strong>Evidence link</strong> — a path to a real artifact in your repo or AWS console screenshot</li>
+<li><strong>Trade-off awareness</strong> — what you gave up. If you can't name a trade-off, you didn't really make a decision</li>
+<li><strong>Failure stories</strong> — what you tried and abandoned. The 8% pypdf-can't-read path in the example is a failure story.</li>
+</ol>
+<p><strong>Volume vs depth:</strong> 2 strong blocks beats 6 weak ones. If you write 2 decisions that match the acceptable example above, that's a strong submission. Don't dilute by listing every minor choice.</p>
+<p><strong>Anti-cheap-shot rule (links to cost gate):</strong> to qualify for the <strong>under-$30 cost bonus (Path H)</strong>, your §6.5 must document what you cut to stay lean. &quot;We're at $5 because we deployed almost nothing&quot; is under-deployment, not discipline.</p>
+<hr />
+<h2 id="friday-presentation-format">Friday Presentation Format</h2>
+<p>40 minutes per group, spread across Fri–Sat. Practice the timing before Demo Day. <strong>Architecture Walkthrough is the largest block (14 min) — invest in slides and rehearsal.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Time</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Pitch + Vision</strong></td>
+<td>5 min</td>
+<td>Domain story, target user, why this use case matters</td>
+</tr>
+<tr>
+<td><strong>2. Live Demo</strong></td>
+<td>7 min</td>
+<td>Trainer's browser → URL → login → upload → AI result visible end to end + persistence check</td>
+</tr>
+<tr>
+<td><strong>3. Architecture Walkthrough</strong> ★</td>
+<td>14 min</td>
+<td>DEEP-DIVE: diagram + 7 mandatory + 1 optional capability + 9 service decisions (compute / DB / vector / frontend / IaC / VPC / identity / observability / cost) + 2-3 real trade-offs</td>
+</tr>
+<tr>
+<td><strong>4. Individual QnA</strong></td>
+<td>12 min</td>
+<td>Trainer picks 2-3 students at random — deep probes after the walkthrough</td>
+</tr>
+<tr>
+<td><strong>5. Cost and Lessons Learned</strong></td>
+<td>2 min</td>
+<td>Real Cost Explorer screenshot + top 3 drivers + &quot;what we'd change&quot;</td>
+</tr>
+</tbody>
+</table>
+<p>Before your slot: post your <code>docs/W7_evidence.md</code> commit link in the trainer channel. No link = Criterion IV pre-flagged before you start.</p>
+<hr />
+<h2 id="bonus-paths-cap-0.5-total">Bonus Paths (cap +0.5 total)</h2>
+<p>One bonus done well beats three done halfway.</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>What</th>
+<th>Difficulty</th>
+<th>How to prove</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Multi-region failover</strong></td>
+<td>Route 53 health check + secondary stack in second region</td>
+<td>Hard</td>
+<td>Live failover demo or video + CloudWatch health check state change</td>
+</tr>
+<tr>
+<td><strong>B. CI/CD pipeline</strong></td>
+<td>CodePipeline or GitHub Actions auto-deploys on push to main</td>
+<td>Medium</td>
+<td>Push a change during demo, show pipeline run and live update</td>
+</tr>
+<tr>
+<td><strong>C. Custom domain + HTTPS</strong></td>
+<td>Route 53 hosted zone + ACM cert on CloudFront</td>
+<td>Easy</td>
+<td>Custom URL in trainer's browser, ACM cert status: Issued</td>
+</tr>
+<tr>
+<td><strong>D. Real users (5+)</strong></td>
+<td>Five external people used the app before Friday with documented feedback</td>
+<td>Easy</td>
+<td>User session screenshots + written feedback in Evidence Pack</td>
+</tr>
+<tr>
+<td><strong>E. IaC full coverage</strong></td>
+<td>Full infra in your chosen IaC — CloudFormation / CDK / Terraform / SAM / Pulumi / AWS Cloud Control API. Can teardown + redeploy in 5 minutes.</td>
+<td>Medium</td>
+<td>Live deploy command during demo</td>
+</tr>
+<tr>
+<td><strong>F. AI safety mechanism</strong></td>
+<td>Content filter / PII redaction / prompt injection guard via Bedrock Guardrails OR Comprehend PII detection OR LLM-as-judge pre-filter OR custom prompt-engineering defense</td>
+<td>Medium</td>
+<td>Show input → blocked/sanitized response with reasoning</td>
+</tr>
+<tr>
+<td><strong>G. Cost optimization</strong></td>
+<td>Real before/after measurement with dollar amounts</td>
+<td>Medium</td>
+<td>Side-by-side screenshots with calculation in Evidence Pack</td>
+</tr>
+<tr>
+<td><strong>H. Cost discipline under $30 + quality</strong></td>
+<td>Total spend under $30 + clean teardown + Criterion II ≥ 4.0 + Criterion III ≥ 4.0 + Section 6.5 documents what was cut to stay lean</td>
+<td>Medium</td>
+<td>Cost Explorer screenshot Mon 2/6 + evidence of conscious trade-offs (not just under-deployment)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="what-done-looks-like">What &quot;Done&quot; Looks Like</h2>
+<p>By the time your group finishes on Friday, a trainer should be able to verify all 7 mandatory capabilities in sequence, then check whether any optional capability was attempted:</p>
+<ol>
+<li>Open your URL — loads in their browser, no SSL errors, under 5 seconds (mandatory #1 User Interface)</li>
+<li>Upload a sample file — the one in your repo under <code>docs/sample_input/</code></li>
+<li>See the AI process it — result visible in the UI within 30 seconds (mandatory #3 AI/ML Feature)</li>
+<li>Confirm state persists — previously uploaded file accessible in a fresh session (mandatory #4 Data Persistence)</li>
+<li>Check network isolation — DB is in a private subnet with SG scoped to compute layer only (mandatory #6 Network Foundation)</li>
+<li>Open your Evidence Pack — all 8 sections present, screenshots timestamped during build, IAM roles documented (mandatory #7 Identity and Access baseline)</li>
+<li>Check the cost — Cost Explorer filtered by <code>Team=G&lt;N&gt;</code> shows under $100, three daily screenshots present</li>
+<li>Ask which optional capability was attempted — bonus credit if it is present and working, partial credit if partial progress shown</li>
+</ol>
+<hr />
+<h2 id="critical-pitfalls-read-these-before-you-start">Critical Pitfalls — Read These Before You Start</h2>
+<p><strong>1. Bedrock model access not enabled</strong>
+You call InvokeModel and get <code>AccessDeniedException: You don't have access to the model with the specified model ID</code>. Fix: AWS Console → Amazon Bedrock → Model access → Request access for WHICHEVER foundation model(s) your team picked (Claude / Llama / Mistral / Titan / Cohere / etc.) + an embeddings model if RAG-based. Do this Wednesday morning before writing any code.</p>
+<p><strong>2. NAT Gateway running 24/7</strong>
+NAT Gateway charges $0.045/hour — $2.16 over 48 hours, before a single user hits your app. If Lambda only calls AWS services (Bedrock, S3, DynamoDB), use VPC endpoints instead. S3 and DynamoDB use free Gateway endpoints. Bedrock and Secrets Manager use Interface endpoints (~$0.01/hr each).</p>
+<p><strong>3. AWS keys committed to public GitHub</strong>
+Bots scan public repos for AWS keys within minutes of a push. Fix: use IAM execution roles for Lambda, instance profiles for EC2, Parameter Store for secrets. Add <code>.env</code> to <code>.gitignore</code> before your first commit. Never put <code>AWS_ACCESS_KEY_ID</code> in code.</p>
+<p><strong>4. Demo URL is HTTP, not HTTPS</strong>
+Modern browsers block certain features on HTTP. CloudFront gives you HTTPS on the default <code>*.cloudfront.net</code> domain at no extra cost. Plan this on Day 1.</p>
+<p><strong>5. Single point of failure on console access</strong>
+One person holds all the credentials. That person gets sick Thursday night. Fix: create IAM users for every team member on Wednesday morning. Share test credentials in the group chat.</p>
+<p><strong>6. Forgetting teardown means continued billing</strong>
+Your account does not reset. An RDS instance left running costs $13/month. An OpenSearch Serverless collection costs $175/month. Delete everything by Sunday 1/6 EOD. Commit the teardown confirmation to your repo.</p>
+<p><strong>7. Using Claude Sonnet during development</strong>
+Foundation model price spread is huge: Sonnet ~12x Haiku, Mistral Large ~16x Llama. Multiple debugging sessions with an expensive model can easily consume $10-20 of your $100 cap before you notice. <strong>Always benchmark the cheapest reasonable model first</strong> on YOUR task (5-10 sample queries, eyeball quality). Upgrade only if measurement justifies.</p>
+<p><strong>8. Free tier misconceptions</strong>
+Bedrock is NOT free tier. NAT Gateway is NOT free tier. KMS CMK charges $1/month (prorated). Know what you will pay before you provision it.</p>
+<p><strong>9. Trying to hit all optional capabilities = burnout</strong>
+Focus on 7 mandatory rock-solid first. Pick ONE optional capability to do well — it drives your Likert scores higher than three half-done optionals. 1 done well &gt; 3 half-done. Same principle applies to bonus paths: pick one and prove it, not three and guess them. The time budget is clear: 12-14 hours to get 7 mandatory solid, 2-3 hours for one optional, 1-2 hours for one bonus path. You have 16 hours total across two days.</p>
+<p><strong>10. Over-engineering the UI: 4 hours on React when a plain HTML form works in 30 minutes</strong>
+Your UI does not need to be beautiful. A single HTML page with a file input, a submit button, and a text area for the AI response is enough. Spending Wednesday afternoon building a polished React frontend while your backend is undeployed is the fastest path to a failed Friday demo.</p>
+<p><strong>11. Setting up full Cognito signup/login/password reset</strong>
+Cognito is OPTIONAL under capability #7. A hardcoded test user, IAM-based access, or signed URLs are all legitimate choices. If you spend 3 hours building a complete Cognito auth flow with email verification, account recovery, and custom UI — that is time you did not spend on your AI feature, which is graded.</p>
+<p><strong>12. Refactoring code mid-hackathon</strong>
+&quot;We should restructure this Lambda into three separate functions with a shared layer&quot; is a sentence that should never be spoken between Wednesday morning and Friday 09:00. Ship the working single-file Lambda. Refactor after the demo if it bothers you. The trainer does not read your code — they interact with your URL.</p>
+<hr />
+<h2 id="why-this-week-matters">Why This Week Matters</h2>
+<p>A portfolio entry that says &quot;I deployed a static website to S3&quot; is one line on a resume. A portfolio entry that says &quot;I built and shipped a production-ready AI SaaS platform — user auth, Bedrock AI pipeline, serverless API, VPC-isolated database, live HTTPS URL, CloudWatch monitoring, under $100 — in 48 hours on a real cloud account&quot; is a story you tell in every interview. It shows architecture thinking, cost discipline, operational awareness, and the ability to ship under pressure.</p>
+<p>W7 is designed to create that story. The skills from six weeks exist for this moment. Use them.</p>
+<p>By Friday, you will have a live URL, a GitHub repo, and a system that works. Keep the repo public after teardown. You earned it.</p>
+<p>Good luck. Ship it.</p>
+</main>
+<nav class="toc"><div class="toc-title">Trong trang này</div>
+<a href="#ship-production-ready-ai-in-48-hours">Ship Production-Ready AI in 48 Hours</a>
+<a href="#the-challenge">The Challenge</a>
+<a href="#whats-different-from-w1-w6">What's Different from W1-W6</a>
+<a href="#the-project-choose-your-domain">The Project — Choose Your Domain</a>
+<a href="#domain-a-edutech-ai-study-buddy" class="lvl3">Domain A — EduTech: &quot;AI Study Buddy&quot;</a>
+<a href="#domain-b-fintech-ai-money-coach" class="lvl3">Domain B — FinTech: &quot;AI Money Coach&quot;</a>
+<a href="#domain-c-productivitytech-ai-document-hub" class="lvl3">Domain C — ProductivityTech: &quot;AI Document Hub&quot;</a>
+<a href="#capabilities-7-mandatory-3-optional-pre-flight-safety">Capabilities — 7 Mandatory + 3 Optional + Pre-flight Safety</a>
+<a href="#mandatory-capabilities-every-group-must-demonstrate" class="lvl3">7 Mandatory Capabilities (every group must demonstrate)</a>
+<a href="#optional-capabilities-bonus-drive-higher-scores-partial-credit" class="lvl3">3 Optional Capabilities (bonus — drive higher scores, partial credit)</a>
+<a href="#pre-flight-safety-requirements-required-before-deploying-any-paid-infrastructure" class="lvl3">Pre-flight Safety Requirements (required before deploying any paid infrastructure)</a>
+<a href="#hackathon-quality-bar-ship-dont-polish">Hackathon Quality Bar — Ship, Don't Polish</a>
+<a href="#what-is-graded-must-be-solid" class="lvl3">What IS graded (must be solid)</a>
+<a href="#what-is-not-graded-hackathon-level-is-fine" class="lvl3">What is NOT graded (hackathon-level is fine)</a>
+<a href="#real-world-parallel" class="lvl3">Real-world parallel</a>
+<a href="#common-over-engineering-traps-to-avoid" class="lvl3">Common over-engineering traps to AVOID</a>
+<a href="#what-ship-means-concretely" class="lvl3">What &quot;ship&quot; means concretely</a>
+<a href="#cost-constraints-100-hard-cap-must-not-exceed">Cost Constraints — $100 HARD CAP (must not exceed)</a>
+<a href="#pre-flight-safety-setup-complete-before-wednesday-architecture-sign-off-not-optional" class="lvl3">Pre-flight safety setup (complete before Wednesday architecture sign-off — not optional)</a>
+<a href="#cost-discipline-tiers" class="lvl3">Cost discipline tiers</a>
+<a href="#recipe-to-stay-under-100" class="lvl3">Recipe to stay under $100</a>
+<a href="#teardown-mandate" class="lvl3">Teardown mandate</a>
+<a href="#day-by-day-plan">Day-by-Day Plan</a>
+<a href="#wednesday-285-day-1-suggested-architecture-lock-7-mandatory-capabilities" class="lvl3">Wednesday 28/5 — Day 1 (suggested): Architecture Lock + 7 Mandatory Capabilities</a>
+<a href="#thursday-295-day-2-suggested-ai-integration-polish-1-optional-capability" class="lvl3">Thursday 29/5 — Day 2 (suggested): AI Integration + Polish + 1 Optional Capability</a>
+<a href="#frisat-30315-demo-day" class="lvl3">Fri–Sat 30–31/5 — Demo Day</a>
+<a href="#what-friday-part-2-looks-like-showing-your-work">What Friday Part 2 Looks Like — Showing Your Work</a>
+<a href="#worked-examples-three-reference-architectures">Worked Examples — Three Reference Architectures</a>
+<a href="#reference-a-edutech-studybot-one-possible-approach" class="lvl3">Reference A — EduTech: &quot;StudyBot&quot; (one possible approach)</a>
+<a href="#reference-b-fintech-budgetbot-one-possible-approach" class="lvl3">Reference B — FinTech: &quot;BudgetBot&quot; (one possible approach)</a>
+<a href="#reference-c-productivitytech-dochub-one-possible-approach" class="lvl3">Reference C — ProductivityTech: &quot;DocHub&quot; (one possible approach)</a>
+<a href="#evidence-pack-docsw7_evidence.md">Evidence Pack — docs/W7_evidence.md</a>
+<a href="#section-6.5-measurement-decisions-required-anti-oi-pho" class="lvl3">Section 6.5 — Measurement &amp; Decisions (Required, anti-đối phó)</a>
+<a href="#friday-presentation-format">Friday Presentation Format</a>
+<a href="#bonus-paths-cap-0.5-total">Bonus Paths (cap +0.5 total)</a>
+<a href="#what-done-looks-like">What &quot;Done&quot; Looks Like</a>
+<a href="#critical-pitfalls-read-these-before-you-start">Critical Pitfalls — Read These Before You Start</a>
+<a href="#why-this-week-matters">Why This Week Matters</a></nav>
+</div>
+<script>
+(function(){
+  var root=document.documentElement, saved=localStorage.getItem("xb-theme");
+  if(saved){root.setAttribute("data-theme",saved);}
+  else if(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches){root.setAttribute("data-theme","dark");}
+  var btn=document.querySelector(".theme-btn");
+  function lbl(){return root.getAttribute("data-theme")==="dark"?"☀ Light":"☾ Dark";}
+  if(btn){btn.textContent=lbl();btn.addEventListener("click",function(){
+    var d=root.getAttribute("data-theme")==="dark"?"":"dark";
+    if(d){root.setAttribute("data-theme","dark");}else{root.removeAttribute("data-theme");}
+    localStorage.setItem("xb-theme",d);btn.textContent=lbl();});}
+  var s=document.querySelector(".search");
+  if(s){s.addEventListener("input",function(){
+    var q=this.value.toLowerCase();
+    if(q){document.querySelectorAll(".tree details").forEach(function(d){d.open=true;});}
+    document.querySelectorAll(".tree li").forEach(function(li){
+      var a=li.querySelector(":scope > a"); if(!a)return;
+      li.style.display=a.textContent.toLowerCase().indexOf(q)>-1?"":"none";});});}
+  var links=[].slice.call(document.querySelectorAll(".toc a")), map={};
+  links.forEach(function(l){map[l.getAttribute("href").slice(1)]=l;});
+  if(links.length){
+    var obs=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.isIntersecting){links.forEach(function(l){l.classList.remove("active");});
+        if(map[e.target.id])map[e.target.id].classList.add("active");}});},
+      {rootMargin:"-56px 0px -72% 0px"});
+    document.querySelectorAll(".content h2[id],.content h3[id]").forEach(function(h){obs.observe(h);});
+  }
+})();
+</script></body></html>

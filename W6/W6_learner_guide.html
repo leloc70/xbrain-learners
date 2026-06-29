@@ -1,0 +1,366 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 6 — Make It Operational: Optimize, Govern, and Secure Your Architecture — XBrain</title><style>
+  :root{--bg:#fff;--side:#f7f7f8;--text:#242424;--muted:#616161;--link:#0067b8;--border:#e3e3e3;--code:#f1f1f1;--active:#e6f2fb;--bar:#0067b8;--hh:48px}
+  html[data-theme=dark]{--bg:#1b1a19;--side:#242322;--text:#e7e7e7;--muted:#a6a6a6;--link:#6cb8f6;--border:#3a3938;--code:#2c2c2b;--active:#26333f;--bar:#4db8ff}
+  *{box-sizing:border-box}html,body{margin:0}
+  body{background:var(--bg);color:var(--text);font:15px/1.65 "Segoe UI",system-ui,Arial,sans-serif}
+  a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}
+  .header{position:sticky;top:0;height:var(--hh);display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--bg);border-bottom:1px solid var(--border);z-index:30}
+  .header .brand{font-weight:600}.header .spacer{margin-left:auto}
+  .theme-btn{background:none;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:13px}
+  .layout{display:grid;grid-template-columns:300px minmax(0,1fr) 240px;align-items:start}
+  .side{position:sticky;top:var(--hh);height:calc(100vh - var(--hh));overflow:auto;background:var(--side);border-right:1px solid var(--border);padding:14px 10px}
+  .search{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);margin-bottom:8px;font-size:13px}
+  .home-link{display:block;padding:6px 8px;border-radius:6px;font-weight:600;font-size:13.5px;color:var(--text);margin-bottom:6px}
+  .home-link:hover{background:var(--active);text-decoration:none}.home-link.active{background:var(--active);box-shadow:inset 3px 0 0 var(--bar)}
+  .tree ul{list-style:none;margin:0;padding-left:13px}.tree>ul{padding-left:0}.tree li{margin:1px 0}
+  .tree a{display:block;padding:3px 8px;border-radius:5px;color:var(--text);font-size:13px;word-break:break-all}
+  .tree a:hover{background:var(--active);text-decoration:none}
+  .tree a.active{background:var(--active);font-weight:600;box-shadow:inset 3px 0 0 var(--bar)}
+  .tree summary{cursor:pointer;padding:3px 6px;border-radius:5px;font-size:13px;font-weight:600;list-style:none}
+  .tree summary::-webkit-details-marker{display:none}
+  .tree summary::before{content:"\25B8";display:inline-block;width:1em;color:var(--muted)}
+  .tree details[open]>summary::before{content:"\25BE"}
+  .tree summary:hover{background:var(--active)}
+  .content{padding:24px 44px 90px;max-width:880px}
+  .content h1{font-size:30px;margin:.1em 0 .5em}
+  .content h2{font-size:22px;margin:1.7em 0 .5em;scroll-margin-top:64px}
+  .content h3{font-size:17px;margin:1.2em 0 .4em;scroll-margin-top:64px}
+  .content table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+  .content th,.content td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  .content th{background:var(--side)}
+  .content code{background:var(--code);padding:2px 6px;border-radius:5px;font-size:.92em}
+  .content pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow:auto}
+  .content blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--link);background:var(--side);border-radius:6px}
+  .content ul{padding-left:20px}.content img{max-width:100%}
+  .toc{position:sticky;top:var(--hh);height:calc(100vh - var(--hh));overflow:auto;padding:24px 16px;font-size:13px}
+  .toc-title{font-weight:600;margin-bottom:10px}
+  .toc a{display:block;color:var(--muted);padding:3px 0 3px 10px;border-left:2px solid transparent;margin-left:-2px}
+  .toc a.lvl3{padding-left:22px}.toc a:hover{color:var(--link)}.toc a.active{color:var(--link);border-left-color:var(--link)}
+  .tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+  .tag-onsite{background:#fde7e7;color:#b91c1c}.tag-online{background:#e3f6e7;color:#15803d}
+  html[data-theme=dark] .tag-onsite{background:#4a1f1f;color:#ff9b9b}html[data-theme=dark] .tag-online{background:#1f3d28;color:#86e29c}
+  @media(max-width:1100px){.layout{grid-template-columns:280px minmax(0,1fr)}.toc{display:none}}
+  @media(max-width:760px){.layout{grid-template-columns:1fr}.side{display:none}}
+</style></head><body>
+<div class="header"><span class="brand">XBrain &times; AWS — Repo</span><span class="spacer"></span><button class="theme-btn">&#9790; Dark</button></div>
+<div class="layout">
+<aside class="side">
+  <input class="search" placeholder="Tìm file...">
+  <a class="home-link" href="../index.html">&#127968; Trang chủ (README)</a>
+  <div class="tree"><ul><li><details><summary>assets</summary><ul><li><a href="../assets/cost-w5.png" target="_blank">cost-w5.png</a></li></ul></details></li><li><details><summary>capstone-phase2</summary><ul><li><details><summary>data</summary><ul><li><details><summary>tf2-finops</summary><ul><li><a href="../capstone-phase2/data/tf2-finops/anomaly_labels_public.csv" target="_blank">anomaly_labels_public.csv</a></li><li><a href="../capstone-phase2/data/tf2-finops/cost_explorer_daily.csv" target="_blank">cost_explorer_daily.csv</a></li><li><a href="../capstone-phase2/data/tf2-finops/cur_line_items.csv" target="_blank">cur_line_items.csv</a></li><li><a href="../capstone-phase2/data/tf2-finops/README.html">README.md</a></li></ul></details></li></ul></details></li><li><details><summary>reference</summary><ul><li><a href="../capstone-phase2/reference/CAPSTONE_EVIDENCE_PACK_FORMAT.html">CAPSTONE_EVIDENCE_PACK_FORMAT.md</a></li><li><a href="../capstone-phase2/reference/TF1_TRIAGE_LEARNER.html">TF1_TRIAGE_LEARNER.md</a></li><li><a href="../capstone-phase2/reference/TF2_FINOPS_LEARNER.html">TF2_FINOPS_LEARNER.md</a></li><li><a href="../capstone-phase2/reference/TF3_SELFHEAL_LEARNER.html">TF3_SELFHEAL_LEARNER.md</a></li><li><a href="../capstone-phase2/reference/TF4_FORESIGHT_LEARNER.html">TF4_FORESIGHT_LEARNER.md</a></li></ul></details></li><li><details><summary>templates</summary><ul><li><details><summary>ai</summary><ul><li><details><summary>contracts</summary><ul><li><a href="../capstone-phase2/templates/ai/contracts/ai-api-contract.html">ai-api-contract.md</a></li><li><a href="../capstone-phase2/templates/ai/contracts/deployment-contract.html">deployment-contract.md</a></li><li><a href="../capstone-phase2/templates/ai/contracts/telemetry-contract.html">telemetry-contract.md</a></li></ul></details></li><li><details><summary>docs</summary><ul><li><a href="../capstone-phase2/templates/ai/docs/01_requirements.html">01_requirements.md</a></li><li><a href="../capstone-phase2/templates/ai/docs/02_solution_design.html">02_solution_design.md</a></li><li><a href="../capstone-phase2/templates/ai/docs/03_ai_engine_spec.html">03_ai_engine_spec.md</a></li><li><a href="../capstone-phase2/templates/ai/docs/04_eval_report.html">04_eval_report.md</a></li><li><a href="../capstone-phase2/templates/ai/docs/05_adrs.html">05_adrs.md</a></li></ul></details></li></ul></details></li><li><details><summary>cdo</summary><ul><li><details><summary>docs</summary><ul><li><a href="../capstone-phase2/templates/cdo/docs/01_requirements_analysis.html">01_requirements_analysis.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/02_infra_design.html">02_infra_design.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/03_security_design.html">03_security_design.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/04_deployment_design.html">04_deployment_design.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/05_cost_analysis.html">05_cost_analysis.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/07_test_eval_report.html">07_test_eval_report.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/08_adrs.html">08_adrs.md</a></li></ul></details></li></ul></details></li><li><a href="../capstone-phase2/templates/README.html">README.md</a></li></ul></details></li><li><a href="../capstone-phase2/W11_W12_capstone_announcement.html">W11_W12_capstone_announcement.md</a></li></ul></details></li><li><details><summary>W1</summary><ul><li><details><summary>schedule</summary><ul><li><a href="../W1/schedule/README.html">README.md</a></li></ul></details></li></ul></details></li><li><details><summary>W2</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W2/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W2/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W2/slides/Bedrock_Overall.pdf" target="_blank">Bedrock_Overall.pdf</a></li><li><a href="../W2/slides/README.html">README.md</a></li></ul></details></li><li><a href="../W2/W2_learner_guide.html">W2_learner_guide.md</a></li><li><a href="../W2/W2_project_announcement.html">W2_project_announcement.md</a></li></ul></details></li><li><details><summary>W3</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W3/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W3/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W3/slides/README.html">README.md</a></li><li><a href="../W3/slides/w3-xbrain.ppt" target="_blank">w3-xbrain.ppt</a></li></ul></details></li><li><a href="../W3/W3_learner_guide_vi.html">W3_learner_guide_vi.md</a></li><li><a href="../W3/W3_learner_guide.html">W3_learner_guide.md</a></li><li><a href="../W3/W3_project_announcement_vi.html">W3_project_announcement_vi.md</a></li><li><a href="../W3/W3_project_announcement.html">W3_project_announcement.md</a></li></ul></details></li><li><details><summary>W4</summary><ul><li><details><summary>data_package</summary><ul><li><details><summary>knowledge_base</summary><ul><li><a href="../W4/data_package/knowledge_base/api_reference_v1_archived.html">api_reference_v1_archived.md</a></li><li><a href="../W4/data_package/knowledge_base/api_reference_v2.html">api_reference_v2.md</a></li><li><a href="../W4/data_package/knowledge_base/api_webhooks.html">api_webhooks.md</a></li><li><a href="../W4/data_package/knowledge_base/architecture_review_feb_2026.html">architecture_review_feb_2026.md</a></li><li><a href="../W4/data_package/knowledge_base/capacity_planning_q2_2026.html">capacity_planning_q2_2026.md</a></li><li><a href="../W4/data_package/knowledge_base/change_management_policy.html">change_management_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/company_overview.html">company_overview.md</a></li><li><a href="../W4/data_package/knowledge_base/cost_optimization_initiative.html">cost_optimization_initiative.md</a></li><li><a href="../W4/data_package/knowledge_base/deployment_policy.html">deployment_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/incident_response_policy.html">incident_response_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/monitoring_dashboard_guide.html">monitoring_dashboard_guide.md</a></li><li><a href="../W4/data_package/knowledge_base/on_call_handbook.html">on_call_handbook.md</a></li><li><a href="../W4/data_package/knowledge_base/onboarding_guide.html">onboarding_guide.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC001_paymentgw_jan.html">postmortem_INC001_paymentgw_jan.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC004_authsvc.html">postmortem_INC004_authsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC005_paymentgw_mar.html">postmortem_INC005_paymentgw_mar.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC006_frauddetector.html">postmortem_INC006_frauddetector.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC008_reportingsvc.html">postmortem_INC008_reportingsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/q1_2026_review_notes.html">q1_2026_review_notes.md</a></li><li><a href="../W4/data_package/knowledge_base/q4_2025_planning_notes.html">q4_2025_planning_notes.md</a></li><li><a href="../W4/data_package/knowledge_base/runbook_frauddetector_model_retraining.html">runbook_frauddetector_model_retraining.md</a></li><li><a href="../W4/data_package/knowledge_base/runbook_paymentgw_circuit_breaker.html">runbook_paymentgw_circuit_breaker.md</a></li><li><a href="../W4/data_package/knowledge_base/security_policy.html">security_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/service_authsvc.html">service_authsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/service_frauddetector.html">service_frauddetector.md</a></li><li><a href="../W4/data_package/knowledge_base/service_notificationsvc.html">service_notificationsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/service_ordersvc.html">service_ordersvc.md</a></li><li><a href="../W4/data_package/knowledge_base/service_paymentgw.html">service_paymentgw.md</a></li><li><a href="../W4/data_package/knowledge_base/service_reportingsvc.html">service_reportingsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/sla_policy.html">sla_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/team_commerce.html">team_commerce.md</a></li><li><a href="../W4/data_package/knowledge_base/team_data.html">team_data.md</a></li><li><a href="../W4/data_package/knowledge_base/team_engagement.html">team_engagement.md</a></li><li><a href="../W4/data_package/knowledge_base/team_platform.html">team_platform.md</a></li><li><a href="../W4/data_package/knowledge_base/tech_radar_2026.html">tech_radar_2026.md</a></li><li><a href="../W4/data_package/knowledge_base/weekly_standup_mar10_2026.html">weekly_standup_mar10_2026.md</a></li></ul></details></li><li><details><summary>scripts</summary><ul><li><a href="../W4/data_package/scripts/monitoring_api.py" target="_blank">monitoring_api.py</a></li><li><a href="../W4/data_package/scripts/pyproject.toml" target="_blank">pyproject.toml</a></li><li><a href="../W4/data_package/scripts/seed_data.py" target="_blank">seed_data.py</a></li></ul></details></li><li><details><summary>structured_data</summary><ul><li><a href="../W4/data_package/structured_data/daily_metrics.csv" target="_blank">daily_metrics.csv</a></li><li><a href="../W4/data_package/structured_data/incidents.csv" target="_blank">incidents.csv</a></li><li><a href="../W4/data_package/structured_data/monthly_costs.csv" target="_blank">monthly_costs.csv</a></li><li><a href="../W4/data_package/structured_data/sla_targets.csv" target="_blank">sla_targets.csv</a></li></ul></details></li><li><a href="../W4/data_package/README.html">README.md</a></li></ul></details></li><li><details><summary>mentoring</summary><ul><li><a href="../W4/mentoring/session1-ai-behind-the-flashy-scene.html">session1-ai-behind-the-flashy-scene.html</a></li><li><a href="../W4/mentoring/session2-genai-in-practice.html">session2-genai-in-practice.html</a></li></ul></details></li><li><details><summary>questions</summary><ul><li><details><summary>student</summary><ul><li><a href="../W4/questions/student/L1_questions.json" target="_blank">L1_questions.json</a></li><li><a href="../W4/questions/student/L2_questions.json" target="_blank">L2_questions.json</a></li><li><a href="../W4/questions/student/L3_questions.json" target="_blank">L3_questions.json</a></li><li><a href="../W4/questions/student/L4_conversation_scripts.json" target="_blank">L4_conversation_scripts.json</a></li><li><a href="../W4/questions/student/L5_investigation_prompts.json" target="_blank">L5_investigation_prompts.json</a></li></ul></details></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W4/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W4/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W4/slides/Agentic AI on AWS Fundamentals.pdf" target="_blank">Agentic AI on AWS Fundamentals.pdf</a></li><li><a href="../W4/slides/AWS Agentic AI Architecture Patterns.pdf" target="_blank">AWS Agentic AI Architecture Patterns.pdf</a></li><li><a href="../W4/slides/README.html">README.md</a></li></ul></details></li><li><a href="../W4/W4_learner_guide_vi.html">W4_learner_guide_vi.md</a></li><li><a href="../W4/W4_learner_guide.html">W4_learner_guide.md</a></li><li><a href="../W4/W4_project_announcement_vi.html">W4_project_announcement_vi.md</a></li><li><a href="../W4/W4_project_announcement.html">W4_project_announcement.md</a></li></ul></details></li><li><details><summary>W5</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W5/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W5/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W5/slides/slides.pdf" target="_blank">slides.pdf</a></li><li><a href="../W5/slides/XBrain_W5_Hard_things_about_your_cloud.pdf" target="_blank">XBrain_W5_Hard_things_about_your_cloud.pdf</a></li></ul></details></li><li><a href="../W5/W5_learner_guide_vi.html">W5_learner_guide_vi.md</a></li><li><a href="../W5/W5_learner_guide.html">W5_learner_guide.md</a></li><li><a href="../W5/W5_project_announcement_vi.html">W5_project_announcement_vi.md</a></li><li><a href="../W5/W5_project_announcement.html">W5_project_announcement.md</a></li></ul></details></li><li><details open><summary>W6</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W6/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W6/schedule/README.html">README.md</a></li></ul></details></li><li><a href="../W6/W6_learner_guide_vi.html">W6_learner_guide_vi.md</a></li><li><a href="../W6/W6_learner_guide.html" class="active">W6_learner_guide.md</a></li><li><a href="../W6/W6_project_announcement_vi.html">W6_project_announcement_vi.md</a></li><li><a href="../W6/W6_project_announcement.html">W6_project_announcement.md</a></li></ul></details></li><li><details><summary>W7</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W7/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W7/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W7/slides/README.html">README.md</a></li></ul></details></li><li><details><summary>starter_apps</summary><ul><li><details><summary>budgetbot</summary><ul><li><details><summary>frontend</summary><ul><li><a href="../W7/starter_apps/budgetbot/frontend/index.html">index.html</a></li></ul></details></li><li><details><summary>sample_data</summary><ul><li><a href="../W7/starter_apps/budgetbot/sample_data/bank_statement_q2_2026.csv" target="_blank">bank_statement_q2_2026.csv</a></li><li><a href="../W7/starter_apps/budgetbot/sample_data/README.html">README.md</a></li><li><a href="../W7/starter_apps/budgetbot/sample_data/smoke_test_5_rows.csv" target="_blank">smoke_test_5_rows.csv</a></li></ul></details></li><li><details><summary>src</summary><ul><li><details><summary>adapters</summary><ul><li><a href="../W7/starter_apps/budgetbot/src/adapters/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/adapters/ai.py" target="_blank">ai.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/adapters/factory.py" target="_blank">factory.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/adapters/storage.py" target="_blank">storage.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/adapters/userstore.py" target="_blank">userstore.py</a></li></ul></details></li><li><a href="../W7/starter_apps/budgetbot/src/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/app.py" target="_blank">app.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/config.py" target="_blank">config.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/handlers.py" target="_blank">handlers.py</a></li></ul></details></li><li><details><summary>tests</summary><ul><li><a href="../W7/starter_apps/budgetbot/tests/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/budgetbot/tests/test_smoke.py" target="_blank">test_smoke.py</a></li></ul></details></li><li><a href="../W7/starter_apps/budgetbot/.env.example" target="_blank">.env.example</a></li><li><a href="../W7/starter_apps/budgetbot/.gitignore" target="_blank">.gitignore</a></li><li><a href="../W7/starter_apps/budgetbot/Makefile" target="_blank">Makefile</a></li><li><a href="../W7/starter_apps/budgetbot/README.html">README.md</a></li><li><a href="../W7/starter_apps/budgetbot/requirements-optional.txt" target="_blank">requirements-optional.txt</a></li><li><a href="../W7/starter_apps/budgetbot/requirements.txt" target="_blank">requirements.txt</a></li></ul></details></li><li><details><summary>dochub</summary><ul><li><details><summary>frontend</summary><ul><li><a href="../W7/starter_apps/dochub/frontend/index.html">index.html</a></li></ul></details></li><li><details><summary>sample_data</summary><ul><li><a href="../W7/starter_apps/dochub/sample_data/manifest.json" target="_blank">manifest.json</a></li><li><a href="../W7/starter_apps/dochub/sample_data/SOURCES.html">SOURCES.md</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-acme__agreement__employment_agreement.txt" target="_blank">tenant-acme__agreement__employment_agreement.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-acme__agreement__master_services_agreement.txt" target="_blank">tenant-acme__agreement__master_services_agreement.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-globex__contract__sales_purchase_agreement.txt" target="_blank">tenant-globex__contract__sales_purchase_agreement.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-globex__nda__non_disclosure_agreement.txt" target="_blank">tenant-globex__nda__non_disclosure_agreement.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-initech__addendum__data_processing_addendum.txt" target="_blank">tenant-initech__addendum__data_processing_addendum.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-initech__license__software_license.txt" target="_blank">tenant-initech__license__software_license.txt</a></li></ul></details></li><li><details><summary>src</summary><ul><li><details><summary>adapters</summary><ul><li><a href="../W7/starter_apps/dochub/src/adapters/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/ai.py" target="_blank">ai.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/factory.py" target="_blank">factory.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/storage.py" target="_blank">storage.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/userstore.py" target="_blank">userstore.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/vector.py" target="_blank">vector.py</a></li></ul></details></li><li><a href="../W7/starter_apps/dochub/src/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/dochub/src/app.py" target="_blank">app.py</a></li><li><a href="../W7/starter_apps/dochub/src/config.py" target="_blank">config.py</a></li><li><a href="../W7/starter_apps/dochub/src/handlers.py" target="_blank">handlers.py</a></li></ul></details></li><li><details><summary>tests</summary><ul><li><a href="../W7/starter_apps/dochub/tests/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/dochub/tests/test_smoke.py" target="_blank">test_smoke.py</a></li></ul></details></li><li><a href="../W7/starter_apps/dochub/.env.example" target="_blank">.env.example</a></li><li><a href="../W7/starter_apps/dochub/.gitignore" target="_blank">.gitignore</a></li><li><a href="../W7/starter_apps/dochub/Makefile" target="_blank">Makefile</a></li><li><a href="../W7/starter_apps/dochub/README.html">README.md</a></li><li><a href="../W7/starter_apps/dochub/requirements-optional.txt" target="_blank">requirements-optional.txt</a></li><li><a href="../W7/starter_apps/dochub/requirements.txt" target="_blank">requirements.txt</a></li></ul></details></li><li><details><summary>studybot</summary><ul><li><details><summary>frontend</summary><ul><li><a href="../W7/starter_apps/studybot/frontend/index.html">index.html</a></li></ul></details></li><li><details><summary>sample_data</summary><ul><li><a href="../W7/starter_apps/studybot/sample_data/SOURCES.html">SOURCES.md</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_01_computer.txt" target="_blank">wiki_01_computer.txt</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_02_internet.txt" target="_blank">wiki_02_internet.txt</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_03_mathematics.txt" target="_blank">wiki_03_mathematics.txt</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_04_photosynthesis.txt" target="_blank">wiki_04_photosynthesis.txt</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_05_energy.txt" target="_blank">wiki_05_energy.txt</a></li></ul></details></li><li><details><summary>src</summary><ul><li><details><summary>adapters</summary><ul><li><a href="../W7/starter_apps/studybot/src/adapters/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/ai.py" target="_blank">ai.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/factory.py" target="_blank">factory.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/storage.py" target="_blank">storage.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/userstore.py" target="_blank">userstore.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/vector.py" target="_blank">vector.py</a></li></ul></details></li><li><a href="../W7/starter_apps/studybot/src/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/studybot/src/app.py" target="_blank">app.py</a></li><li><a href="../W7/starter_apps/studybot/src/config.py" target="_blank">config.py</a></li><li><a href="../W7/starter_apps/studybot/src/handlers.py" target="_blank">handlers.py</a></li></ul></details></li><li><details><summary>tests</summary><ul><li><a href="../W7/starter_apps/studybot/tests/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/studybot/tests/test_smoke.py" target="_blank">test_smoke.py</a></li></ul></details></li><li><a href="../W7/starter_apps/studybot/.env.example" target="_blank">.env.example</a></li><li><a href="../W7/starter_apps/studybot/.gitignore" target="_blank">.gitignore</a></li><li><a href="../W7/starter_apps/studybot/Makefile" target="_blank">Makefile</a></li><li><a href="../W7/starter_apps/studybot/README.html">README.md</a></li><li><a href="../W7/starter_apps/studybot/requirements-optional.txt" target="_blank">requirements-optional.txt</a></li><li><a href="../W7/starter_apps/studybot/requirements.txt" target="_blank">requirements.txt</a></li></ul></details></li><li><a href="../W7/starter_apps/README.html">README.md</a></li></ul></details></li><li><a href="../W7/W7_cost_estimates.html">W7_cost_estimates.md</a></li><li><a href="../W7/W7_hackathon_rules.txt" target="_blank">W7_hackathon_rules.txt</a></li><li><a href="../W7/W7_learner_guide.html">W7_learner_guide.md</a></li><li><a href="../W7/W7_project_announcement.html">W7_project_announcement.md</a></li></ul></details></li><li><details><summary>W8</summary><ul><li><details><summary>exercise_submission</summary><ul><li><a href="../W8/exercise_submission/README.html">README.md</a></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W8/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W8/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W8/slides/README.html">README.md</a></li></ul></details></li><li><a href="../W8/Jira_Working_Rules.html">Jira_Working_Rules.md</a></li><li><a href="../W8/W8_phase2_announcement_cloud.html">W8_phase2_announcement_cloud.md</a></li></ul></details></li><li><details><summary>W9</summary><ul><li><details><summary>exercise_submission</summary><ul><li><a href="../W9/exercise_submission/README.html">README.md</a></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W9/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W9/schedule/README.html">README.md</a></li></ul></details></li><li><a href="../W9/W9_phase2_announcement_cloud.html">W9_phase2_announcement_cloud.md</a></li></ul></details></li><li><details><summary>W10</summary><ul><li><details><summary>exercise_submission</summary><ul><li><a href="../W10/exercise_submission/README.html">README.md</a></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W10/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W10/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W10/slides/README.html">README.md</a></li><li><a href="../W10/slides/w10_afternoon_secrets_supply_chain.html">w10_afternoon_secrets_supply_chain.html</a></li></ul></details></li><li><a href="../W10/W10_phase2_announcement_cloud.html">W10_phase2_announcement_cloud.md</a></li></ul></details></li><li><details><summary>W11</summary><ul><li><details><summary>exercise_submission</summary><ul><li><a href="../W11/exercise_submission/README.html">README.md</a></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W11/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W11/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W11/slides/README.html">README.md</a></li></ul></details></li></ul></details></li><li><a href="../.gitignore" target="_blank">.gitignore</a></li><li><a href="../GUIDELINE.html">GUIDELINE.md</a></li></ul></div>
+</aside>
+<main class="content"><h1 id="week-6-make-it-operational-optimize-govern-and-secure-your-architecture">Week 6 — Make It Operational: Optimize, Govern, and Secure Your Architecture</h1>
+<h2 id="what-youll-learn-this-week">What You'll Learn This Week</h2>
+<p>This is the final hardening week before the W7 capstone. You take the application you built through W1-W5 and make it production-ready: auto-healing infrastructure, cost-optimized storage, real cost visibility with tagging and FinOps tools, and automated security enforcement that fixes misconfigurations without human intervention. The heavy emphasis this week is on <strong>Cost and Optimization</strong> — two of the four Must-Haves are dedicated to proving you not only know where your money goes, but that you actually did something about waste. Everything you build this week feeds directly into your W7 demo and your cloud operations interview story.</p>
+<p><strong>What carries forward from W1-W5:</strong> Your architecture diagram, your business domain, your design decisions, and your code repository. The workshop account is fresh — redeploy whatever you need for W6. You do not have to re-prove every prior-week feature; you have already done that. What trainer expects on Friday Part 1 is a short project recap: what the application is, its business domain, and the key design decisions you carried forward from W1-W5 — enough to set context for the W6 work. No live app action and no diagram update are required in Part 1. Then W6 grading focuses on the 4 Must-Haves below.</p>
+<p>This week is organized around <strong>4 Must-Haves (MHs)</strong> — and two of them are about cost:</p>
+<ul>
+<li><strong>MH-COST-V</strong> — Cost Visibility &amp; Attribution (tagging strategy + cost allocation tags activated + a cost tool + baseline breakdown)</li>
+<li><strong>MH-COST-A</strong> — Cost Control &amp; Action (the Automated Cost Guard: a scheduled Lambda that actually stops untagged billable compute, plus Budgets → SNS → Lambda and a latency ADR)</li>
+<li><strong>MH-OBS</strong> — Monitoring and Observability (CloudWatch dashboards, alarms, Log Insights)</li>
+<li><strong>MH-SEC</strong> — Self-Healing Security Guard (a Lambda + EventBridge that detects one security misconfiguration and auto-fixes it, plus one supporting preventive control)</li>
+</ul>
+<blockquote>
+<p><strong>Optional bonus — Optimization Actions:</strong> Want to go further? gp2→gp3 migration, config-based Trusted Advisor remediation (≥2 findings), an RI/SP break-even analysis, and a short &quot;wasteful → changed&quot; reflection are all worth bonus credit. They are no longer required Must-Haves — but they are exactly the kind of optimization story that strengthens your W7 demo and interview.</p>
+</blockquote>
+<blockquote>
+<p><strong>⚠️ HARD COST CAP — USD $150 for the week.</strong> Your group's total AWS account spend for W6 must stay at or under $150. If your account total exceeds $150, the <strong>entire W6 assignment fails</strong> for your group — no exceptions, even if all four Must-Haves are done perfectly. Last week a group left resources idle and burned over a thousand dollars; that is why this cap exists now. A complete 3-tier workshop stack never needs anywhere near $150. Read the <strong>W6 Cost Discipline Memo</strong> (shared with the project announcement) before you deploy anything — it shows exactly how to stay under: Single-AZ, smallest instance that works, serverless where possible, shut down overnight, and no Bedrock Provisioned Throughput / OpenSearch multi-node / EKS. Staying ≤ $150 and proving you actively chose cheaper resources <strong>is</strong> part of MH-COST-V — it is not extra work on top of the assignment.</p>
+</blockquote>
+<p><img src="../assets/cost-w5.png" alt="Actual W5 AWS cost — a workshop-only account that burned over a thousand dollars on idle resources, which is why the $150 cap now exists" /></p>
+<hr />
+<h2 id="focus-areas">Focus Areas</h2>
+<h3 id="monday-high-availability-auto-scaling-costperformance-optimization">Monday — High Availability, Auto Scaling &amp; Cost/Performance Optimization</h3>
+<p><strong>Main topics</strong>: EC2 Auto Scaling Groups (ASG), ALB health checks, S3 storage class optimization, EBS cost and performance tuning, Cloud Economics</p>
+<p><strong>Must-do hands-on</strong>: Both SimuLearn labs (Auto-Healing and Highly Available Web Applications) and both EBS courses. For the EBS courses, apply the learning directly — look at your actual RDS and EC2 volume types and consider migrating from gp2 to gp3. This migration is <strong>optional bonus</strong> this week, not a required Must-Have: if you do it, document the volume ID, old type, new IOPS setting, new throughput setting, and the cost comparison for bonus credit.</p>
+<p><strong>Must-know concepts (read + discuss)</strong>: Cloud Economics SimuLearn — this is an analytical exercise, not a deploy-something lab. Work through the RI vs Savings Plans vs Spot analysis as a group; an RI/SP break-even decision rationale is <strong>optional bonus</strong> this week.</p>
+<p><strong>What to pay attention to</strong>:</p>
+<ul>
+<li>Set the ALB health check type to &quot;ELB&quot; on your ASG, not just &quot;EC2.&quot; EC2 type only catches hypervisor failures. ELB type catches application-layer failures — if your app crashes but the VM is still running, only ELB health check replaces the instance.</li>
+<li>gp3 IOPS are configurable independently of volume size — a 100 GB gp3 volume gets 3,000 IOPS guaranteed and can be pushed to 10,000 IOPS by changing a setting, with no downtime. This is not how gp2 works (gp2 ties IOPS to volume size using a burst credit system). For almost every student workload, gp3 is the right choice.</li>
+</ul>
+<p><strong>Hands-on tip</strong>: After the EBS courses, check your actual RDS and EC2 volume types in the AWS console. If you want the bonus, migrate gp2 to gp3 and document: volume ID, old type, new IOPS setting, new throughput setting, cost comparison. Screenshot the before/after — capture the before state while still on gp2. This is your optional gp2→gp3 bonus evidence.</p>
+<p><strong>Homework (Monday evening)</strong>: Read &quot;Optimize Your Cloud Governance: Balance Security and Cost&quot; — focus on Module 3 (Config for Cost) and Module 4 (Tagging). These feed directly into your MH-COST-V deliverables. Module 2 (Organizations/SCPs/RCPs) is context reading — you will NOT be delivering SCP or Tag Policy JSON this week. Module 5 (Security-Cost Balance) helps you write the 1-2 sentence security-cost statement in your MH-SEC section. Tuesday morning there is a quick discussion: &quot;What is one cost-vs-security trade-off your group is considering?&quot;</p>
+<hr />
+<h3 id="tuesday-cost-audit-governance-observability-foundations">Tuesday — Cost Audit, Governance &amp; Observability Foundations</h3>
+<p><strong>Main topics</strong>: Automated Cost Guard (MH-COST-A — build it today), AWS Systems Manager (reinforcement), Amazon CloudWatch (MH-OBS foundation), cost-aware governance (tagging + FinOps tools), FinOps tooling, AWS Trusted Advisor (optional bonus)</p>
+<p><strong>Must-do hands-on</strong>:</p>
+<ul>
+<li><strong>Automated Cost Guard (MH-COST-A — required, build it today)</strong>: Build the safety net that would have caught last week's runaway account. Wire an EventBridge Scheduler (or daily cron) → Lambda that finds and STOPS billable compute (EC2/RDS) not tagged <code>keep=true</code>. Give the Lambda a least-privilege role (only the EC2/RDS describe + stop actions it needs — no wildcards). Prove it actually turns something off: leave one untagged instance running, let the Lambda fire on its schedule, and capture the CloudTrail <code>StopInstances</code>/<code>StopDBInstance</code> event with before/after state. Then wire AWS Budgets (daily $150 threshold) → SNS → the same Lambda, and demonstrate that path with a test SNS publish. Write a short latency ADR: AWS cost data lags ~8-24h, so in a 48-hour account the real Budgets cost trigger likely won't fire — that is expected and not penalized; what IS penalized is a missing scheduled mechanism, no demonstrated stop, or a missing ADR. What gets you the score: a resource actually being turned off by your automation — not a notification.</li>
+<li><strong>CloudWatch (MH-OBS)</strong>: Install the CloudWatch Agent, get a memory metric appearing in the <code>CWAgent</code> namespace, and start building your dashboard. Do this today — if you wait until Wednesday, you will have no historical memory data by Thursday walkabout.</li>
+<li><strong>CFM FinOps courses (MH-COST-V)</strong>: Open Cost Explorer and filter by your CostCenter tag. Identify your top-3 cost drivers and note a baseline cost breakdown observation. Set a Budgets threshold alert. Keep all of this within the $150 cap.</li>
+<li><strong>Trusted Advisor (optional bonus)</strong>: If you want the bonus, run all checks and remediate <strong>at least 2 configuration-based findings</strong> with before/after evidence (finding description + severity, the action you took, the after screenshot). Target config-based checks — these are the ones that actually fire in a short-lived account: unattached EBS volume, unassociated Elastic IP, missing S3 lifecycle rule, public S3 bucket, security group open to <code>0.0.0.0/0</code> on port 22/3389, EBS volume with no snapshot. Utilization-based checks (Low Utilization EC2, Idle RDS, Idle Load Balancer) need ~14 days of CloudWatch history and will NOT fire in this 48-hour account, so do not build bonus evidence around them. &quot;We saw findings&quot; is not enough — the action is what counts.</li>
+</ul>
+<p><strong>SSM Lab — reinforcement (not a graded W6 deliverable)</strong>: You have been using Session Manager and Parameter Store informally since W3-W5 redeployments. This lab deepens those skills (Run Command, Automation runbooks, Patch Manager). Continue applying Session Manager and Parameter Store as good ops hygiene on your redeployed stack — but no artefact is required from this lab for W6 scoring.</p>
+<p><strong>Must-know concepts (read + checkpoint discussion)</strong>: The governance course (&quot;Optimize Your Cloud Governance&quot;) is this week's reading assignment — NOT a lab session. Your group uses it to produce your MH-COST-V deliverable:</p>
+<ul>
+<li>A <strong>tagging strategy document</strong> with at least 4 tag keys (Owner, Environment, CostCenter, Application) and agreed-upon values with consistent capitalization — THEN activate those tag keys as cost allocation tags in the Billing console (Settings &gt; Cost allocation tags). Both steps are required for Cost Explorer to group by your tags.</li>
+</ul>
+<p>(Optional bonus: a Config rule for cost compliance, e.g. &quot;EBS volumes must be gp3&quot; or &quot;EC2 instance types must be in an approved list&quot;, is extra cost-governance credit — not required.)</p>
+<p>The Tuesday afternoon checkpoint question is: &quot;What is one cost-vs-security trade-off your group is making?&quot; — bring a real observation from your architecture, not a textbook answer.</p>
+<p><strong>What to pay attention to</strong>:</p>
+<ul>
+<li><strong>The two-step tagging trap</strong>: Tagging a resource is not enough. You must also activate the tag key as a cost allocation tag in the Billing console (Settings &gt; Cost allocation tags). Until that second step is done, Cost Explorer cannot group by your tag — even if every resource is tagged perfectly. Do this today, not Thursday.</li>
+<li>CloudWatch does NOT collect memory or disk metrics by default — you must install the CloudWatch Agent inside the OS. It pushes data to the <code>CWAgent</code> custom namespace. Alarms on CWAgent metrics will stay in INSUFFICIENT_DATA until the Agent sends at least one data point.</li>
+</ul>
+<p><strong>Hands-on tip</strong>: Make sure your Automated Cost Guard (MH-COST-A) is firing before you leave Tuesday — it is the one required build today, and the scheduled trigger needs time to fire and produce a CloudTrail Stop event you can screenshot. If you also go for the Trusted Advisor bonus, use <strong>config-based findings</strong> (unattached EBS, unassociated EIP, missing S3 lifecycle, public S3, open SG on 22/3389, EBS with no snapshot) — these are the only ones that surface in a 48-hour account — and document the finding name, what you changed, and before/after screenshots. Two fully documented findings beat 12 undocumented ones.</p>
+<hr />
+<h3 id="wednesday-security-monitoring-kms-automated-remediation">Wednesday — Security Monitoring, KMS &amp; Automated Remediation</h3>
+<p><strong>Main topics</strong>: AWS security monitoring stack (CloudTrail, GuardDuty, Config, Security Hub, Detective, Inspector), KMS and envelope encryption, event-driven security remediation with Lambda, environment audit</p>
+<p><strong>Must-do hands-on</strong>: Build your <strong>Self-Healing Security Guard (MH-SEC)</strong> — this is the core build of the day. KMS lab (create a customer managed key, separate admin and use roles in the key policy, encrypt at least 2 application resources) feeds your supporting control. Environment Audit lab (IAM Credential Report, S3 public access audit, CloudTrail verification) gives you the misconfiguration to hunt.</p>
+<p><strong>Must-know concepts (read + discuss)</strong>: The Core Security SimuLearn is a concept walkthrough, not a build-something lab — use it to review the security detection chain (IAM least privilege, CloudTrail logging, GuardDuty findings, common misconfigurations). The Security Best Practices course covers how each service connects in the detection chain.</p>
+<p><strong>MH-SEC — Self-Healing Security Guard (required)</strong>: This reuses the exact pattern you already built for the MH-COST-A Cost Guard — a Lambda triggered by EventBridge — but instead of stopping untagged compute, it detects and auto-fixes one security misconfiguration.</p>
+<ul>
+<li><strong>The auto-fix Lambda (required core)</strong>: A Lambda + EventBridge trigger that detects ONE security misconfiguration and fixes it via boto3 with a least-privilege role. Pick one:
+<ul>
+<li>A Security Group with an open ingress rule (<code>0.0.0.0/0</code> on port 22 or 3389) → the Lambda revokes that rule, OR</li>
+<li>An S3 bucket that is public → the Lambda enables Block Public Access on it.</li>
+</ul>
+</li>
+<li><strong>Prove it heals</strong>: intentionally create the violation (open the SG / make a bucket public), let the Lambda fire, then capture before/after screenshots AND the CloudTrail event for the fix API call (<code>RevokeSecurityGroupIngress</code> or <code>PutPublicAccessBlock</code>). The CloudTrail event proving your code actually performed the fix is what scores — not just &quot;the Lambda exists.&quot;</li>
+<li><strong>PLUS one supporting preventive control</strong>, pick one:
+<ul>
+<li>S3 account-level Block Public Access turned on + a bucket policy that denies unencrypted or non-TLS access, OR</li>
+<li>A KMS Customer Managed Key (CMK) with key rotation enabled, used to encrypt one data store, OR</li>
+<li>IAM Access Analyzer enabled with at least one finding triaged (reviewed + resolved or justified).</li>
+</ul>
+</li>
+<li><strong>PLUS a 1-2 sentence security-cost statement</strong>: explain the security-vs-cost trade-off you made (e.g. why you chose this detection/fix and supporting control given the $150 cap).</li>
+<li>You do NOT need AWS Config (recorder or managed rule), SSM Automation documents, or an AutomationAssumeRole for MH-SEC. (If you'd rather use a Config managed rule purely as the <em>detection</em> trigger feeding your Lambda, that's an accepted alternative — but it is optional, not required.)</li>
+</ul>
+<p><strong>What to pay attention to</strong>:</p>
+<ul>
+<li>KMS does NOT directly encrypt your application data. It generates a data key that your code uses to encrypt locally, then stores a copy of that data key encrypted (alongside your ciphertext). When you need to decrypt, you send the encrypted data key to KMS and get the plaintext key back. KMS never sees your actual data. If you delete a KMS key, everything encrypted with it is permanently unrecoverable.</li>
+<li>The difference between the AWS-managed key (<code>aws/s3</code>) and a Customer Managed Key (CMK): the AWS-managed key is controlled by AWS — you cannot set a key policy or rotate it on demand. A CMK is one you create, where you decide who the KeyAdministrators and KeyUsers are, and you can turn on automatic rotation. If you use the KMS supporting control, only a CMK with rotation enabled demonstrates that you actually control the encryption.</li>
+<li>Give the auto-fix Lambda a least-privilege role — only the specific describe/revoke or put-public-access-block actions it needs, no wildcards. This is the same discipline as the Cost Guard role.</li>
+</ul>
+<p><strong>Hands-on tip</strong>: Run the heal loop end-to-end — create the violation on purpose, watch the Lambda fire, confirm the misconfiguration is gone, and grab the CloudTrail event for the fix call plus before/after screenshots. That CloudTrail event of your Lambda fixing the problem is what separates a &quot;we detected it&quot; story from a &quot;it self-healed&quot; story.</p>
+<hr />
+<h3 id="thursday-review-and-prep-day">Thursday — Review and Prep Day</h3>
+<p>Use Thursday to close gaps from Mon-Wed and finalize all 4 MH deliverables before Friday.</p>
+<p><strong>Morning</strong>: Trainer-led review of top checkpoint misconceptions, then group consolidation work organized around the 4 Must-Haves:</p>
+<ol>
+<li><p><strong>Cost Visibility (MH-COST-V)</strong>: Produce your tagging strategy document (4+ keys, agreed values and capitalization). Confirm cost allocation tags are activated in the Billing console (Settings &gt; Cost allocation tags — screenshot both the strategy doc and the activation confirmation). Open Cost Explorer filtered by your CostCenter tag and identify your top-3 cost drivers. Write a brief baseline cost breakdown observation. Your trainer will check the tagging doc and the Billing console activation during walkabout.</p>
+</li>
+<li><p><strong>Cost Control &amp; Action (MH-COST-A)</strong>: Confirm your Automated Cost Guard works: show the CloudTrail <code>StopInstances</code>/<code>StopDBInstance</code> event proving the scheduled Lambda (with its least-privilege role) turned an untagged resource off, plus the Budgets ($150 daily) → SNS → Lambda wiring demonstrated by a test SNS publish, and the latency ADR. Your trainer will look for a resource actually stopped by automation during walkabout — a notification with nothing stopped does not pass.</p>
+<p><strong>Optional bonus — Optimization Actions</strong>: If you went for the bonus, finalize your config-based TA findings table (at least 2 with before/after evidence), gp2→gp3 migration documentation (volume ID, IOPS setting, throughput setting, cost comparison), RI/SP break-even analysis or justified deferral, and a 100-150 word &quot;wasteful → changed&quot; reflection (what you found, what you changed, the impact).</p>
+</li>
+<li><p><strong>CloudWatch Observability (MH-OBS)</strong>: Confirm your dashboard has at least 3 meaningful widgets (1 API-layer metric, 1 data-layer metric, 1 CWAgent metric). Confirm at least one alarm is in OK state — if any alarm is in INSUFFICIENT_DATA, investigate and fix now. Save a Log Insights query with a result screenshot.</p>
+</li>
+<li><p><strong>Self-Healing Security Guard (MH-SEC)</strong>: Confirm your auto-fix Lambda actually healed the violation — show the before state (open SG / public bucket), the after state (rule revoked / Block Public Access on), and the CloudTrail event of the fix API call. Confirm your supporting preventive control is in place (S3 BPA + deny-unencrypted/non-TLS bucket policy, OR a KMS CMK with rotation, OR IAM Access Analyzer with a triaged finding). Write your 1-2 sentence security-cost statement.</p>
+</li>
+</ol>
+<p><strong>Afternoon</strong>: Finalize your Evidence Pack (<code>docs/W6_evidence.md</code>). Every section needs screenshots with 1-2 lines explaining the configuration — raw screenshots without context do not count toward the score-4 threshold. All 4 MH sections must be present.</p>
+<p>Submit your updated architecture diagram and Evidence Pack link to the trainer Slack channel before 17:00.</p>
+<hr />
+<h3 id="friday-show-what-you-know">Friday — Show What You Know</h3>
+<p>Groups 9-15 present W6 content this week. Groups 1-8 present next Friday.</p>
+<p>Presentation runs ~10-12 minutes per group in four parts:</p>
+<ol>
+<li><strong>Project Recap (~1.5 min)</strong>: give a short verbal/slide recap of the project — what the application is, its business domain, and the key architecture and design decisions carried forward from W1-W5 — to frame the W6 operational work. No diagram update and no live app action are required here. If you addressed any W5 feedback, mention it briefly — optional, not a scored gate.</li>
+<li><strong>W6 Architecture (~3 min)</strong>: walk through all 4 MH additions in order:
+<ul>
+<li>Cost Visibility layer (MH-COST-V): tagging strategy + cost allocation tag activation + Cost Explorer top-3 cost driver view + baseline cost breakdown observation</li>
+<li>Cost Control layer (MH-COST-A): Automated Cost Guard — scheduled Lambda (least-privilege role) stopping untagged compute, proven via CloudTrail Stop event; Budgets $150 → SNS → Lambda + latency ADR</li>
+<li>Monitoring layer (MH-OBS): CloudWatch dashboard + alarm in OK state + Log Insights query result</li>
+<li>Security layer (MH-SEC): Self-Healing Security Guard — Lambda + EventBridge that auto-fixed one misconfiguration (before/after + CloudTrail fix event) + supporting preventive control + 1-2 sentence security-cost statement</li>
+<li>Optional bonus, if done: config-based TA findings with before/after + gp2→gp3 migration data + RI/SP analysis/deferral + &quot;wasteful → changed&quot; reflection</li>
+</ul>
+</li>
+<li><strong>Individual QnA (~3 min)</strong>: 2-3 team members called by name — any team member can be picked. Prepare the whole team, not just the person who built each piece</li>
+<li><strong>Live Demo (~3-4 min)</strong>: ASG auto-healing, the Self-Healing Security Guard fixing a misconfiguration (before/after + CloudTrail fix event), tagging strategy + cost allocation tag activation evidence, Cost Explorer filtered by tag, Automated Cost Guard stopping an untagged resource (CloudTrail Stop event), your supporting preventive control. If you did the bonus: EBS volume settings (type, IOPS, throughput) and config-based TA findings with before/after</li>
+</ol>
+<p>Post your <code>docs/W6_evidence.md</code> commit link in the trainer Slack channel before your slot. No link = Criterion IV capped at 3.</p>
+<hr />
+<h2 id="this-weeks-deliverables">This Week's Deliverables</h2>
+<p>Your group must deliver by Friday — and your AWS account total must stay <strong>≤ $150</strong> for the week (exceeding it fails the entire W6 assignment; see the W6 Cost Discipline Memo):</p>
+<ol>
+<li><p><strong>MH-COST-V — Cost Visibility &amp; Attribution</strong>:</p>
+<ul>
+<li>Tagging strategy document with at least 4 agreed tag keys (Owner, Environment, CostCenter, Application), agreed values, and capitalization convention</li>
+<li>Cost allocation tags activated in the Billing console (screenshot showing activation in Settings &gt; Cost allocation tags — this is the step most groups miss)</li>
+<li>At least 1 cost visibility tool used: Cost Explorer filtered by tag showing your top-3 cost drivers, OR Budgets alert configured, OR Cost Anomaly Detection enabled</li>
+<li>1-page strategy doc summarizing your cost governance decisions for this deployment</li>
+<li>Baseline cost breakdown screenshot with top-3 cost driver observation noted</li>
+<li>Account total kept ≤ $150 with evidence you actively chose cheaper resources (Single-AZ, smallest instance that works, serverless, overnight shutdown) — this is part of MH-COST-V, not extra work</li>
+</ul>
+</li>
+<li><p><strong>MH-COST-A — Cost Control &amp; Action</strong> (the Automated Cost Guard):</p>
+<ul>
+<li>An EventBridge Scheduler/daily-cron → Lambda that stops billable compute (EC2/RDS) not tagged <code>keep=true</code>, with a least-privilege execution role (only the describe/stop actions it needs)</li>
+<li>Demonstrably turning a resource off: a resource left running, then stopped by the scheduled Lambda, captured as a CloudTrail <code>StopInstances</code>/<code>StopDBInstance</code> event with before/after state</li>
+<li>AWS Budgets (daily $150) → SNS → the same Lambda, demonstrated via a test SNS publish</li>
+<li>A short latency ADR (cost data lags ~8-24h so the real cost trigger likely won't fire in a 48h account — expected, not penalized; a missing scheduled mechanism, no demonstrated stop, or a missing ADR is not acceptable)</li>
+<li>Graded on a resource actually being turned off by automation, not a notification</li>
+</ul>
+</li>
+<li><p><strong>MH-OBS — CloudWatch Observability</strong>:</p>
+<ul>
+<li>Dashboard with at least 3 meaningful metrics (one API-layer, one data-layer, one CloudWatch Agent metric from <code>CWAgent</code> namespace)</li>
+<li>At least one alarm configured and in OK state</li>
+<li>Log Insights query saved with result screenshot</li>
+</ul>
+</li>
+<li><p><strong>MH-SEC — Self-Healing Security Guard</strong>:</p>
+<ul>
+<li>A Lambda + EventBridge trigger (same pattern as the MH-COST-A Cost Guard) that detects ONE security misconfiguration and auto-fixes it via boto3, with a least-privilege execution role — recommended: a Security Group open to <code>0.0.0.0/0</code> on port 22/3389 → revoke that rule, OR a public S3 bucket → enable Block Public Access</li>
+<li>Demonstrated end-to-end: intentionally create the violation, the Lambda fixes it, captured as before/after screenshots PLUS the CloudTrail event for the fix API call (e.g. <code>RevokeSecurityGroupIngress</code> / <code>PutPublicAccessBlock</code>)</li>
+<li>One supporting preventive control: S3 account-level Block Public Access + a deny-unencrypted/non-TLS bucket policy, OR a KMS CMK with rotation enabled on a data store, OR IAM Access Analyzer enabled with at least one finding triaged</li>
+<li>1-2 sentence security-cost statement: the security-vs-cost trade-off you made and why it fits your project given the $150 cap</li>
+<li>GuardDuty and CloudTrail enabled</li>
+<li>AWS Config recorder / managed rule / SSM Automation / AutomationAssumeRole are NOT required (a Config managed rule may optionally be used only as the detection trigger feeding your Lambda)</li>
+</ul>
+</li>
+<li><p><strong>Evidence Pack</strong> (<code>docs/W6_evidence.md</code>): Cover (group ID, repo link, W5 Evidence Pack link), MH-COST-V, MH-COST-A, MH-OBS, MH-SEC, Project Recap (a short written recap — what the app is, its business domain, and the key design decisions carried forward from W1-W5), Bonus (optional). Screenshots with 1-2 line config notes per item. Slides link to commit hash. No Evidence Pack = score capped at 2. Screenshots without notes = capped at 3.</p>
+</li>
+</ol>
+<p><strong>Optional bonus — Optimization Actions</strong> (not required; strengthens your W7 demo and interview story):</p>
+<ul>
+<li>Trusted Advisor findings table: at least 2 <strong>config-based</strong> findings actually remediated (before state, action taken, after state — screenshot each stage). Use config-based checks (unattached EBS, unassociated EIP, missing S3 lifecycle, public S3, open SG on 22/3389, EBS with no snapshot) — config-based TA findings fire within 48h; utilization-based ones do not</li>
+<li>gp2→gp3 migration: volume ID, old type, new IOPS setting, new throughput setting, cost comparison (for each migrated volume)</li>
+<li>RI/SP break-even analysis: a documented decision or a written justified deferral</li>
+<li>100-150 word &quot;wasteful → changed&quot; reflection: what did you find wasteful, what did you change, what was the outcome?</li>
+</ul>
+<p><strong>Bonus (+0.25)</strong>: Extend the Self-Healing Security Guard to detect and auto-fix a SECOND distinct misconfiguration (e.g. it handles both an open Security Group and a public S3 bucket), with before/after + CloudTrail evidence for the second fix too.</p>
+<hr />
+<h2 id="how-youll-be-evaluated">How You'll Be Evaluated</h2>
+<ul>
+<li><strong>Group Architecture (20%)</strong>: Were all 4 MH additions correctly configured and placed in your diagram? Can your team defend the choices — how the Automated Cost Guard decides what to stop and why its role is least-privilege, what your tagging strategy enforces, which security misconfiguration your Self-Healing Security Guard fixes and which supporting control you chose and why?</li>
+<li><strong>Individual QnA (30%)</strong>: Your ability to explain how the Automated Cost Guard works end-to-end (schedule → Lambda → tag check → stop, plus the Budgets → SNS path and why the real cost trigger lags), the two-step tagging + cost allocation tag activation process, how the Self-Healing Security Guard detects and fixes its misconfiguration (and why its role is least-privilege), and KMS envelope encryption — when called on. Every team member can be picked.</li>
+<li><strong>Deployment and Evidence (40%)</strong>: The biggest slice. Graded against your Evidence Pack section by section.
+<ul>
+<li>Score of 4 requires: account total ≤ $150; all 4 MH sections with screenshots and notes; tagging strategy with cost allocation tag activation evidence and baseline cost breakdown observation; Automated Cost Guard with a resource actually stopped by the scheduled least-privilege Lambda (CloudTrail Stop event) plus Budgets $150 → SNS → Lambda demonstrated and the latency ADR; CloudWatch dashboard with CWAgent metric; alarm in OK state; Log Insights query saved; Self-Healing Security Guard that auto-fixed one misconfiguration with before/after and the CloudTrail fix event, plus one supporting preventive control; slides linked to Evidence Pack</li>
+<li>Score of 5 requires all of the above PLUS one of: auto-healing event in CloudWatch Activity Log with timestamps, the Self-Healing Security Guard fixing a SECOND distinct misconfiguration (before/after + CloudTrail fix event), or a completed Optimization Actions bonus (config-based TA finding with before/after remediation, ideally cost impact quantified)</li>
+</ul>
+</li>
+<li><strong>Project Recap (10%)</strong>: A crisp, accurate recap of the project — what the application is, its business domain, and the key design decisions carried forward from W1-W5 — that clearly frames the W6 operational work. Scored purely on the clarity and accuracy of the recap; no diagram update or live app action is required. Mentioning W5 feedback specifically is a bonus, not a requirement.</li>
+<li><strong>Daily checkpoints</strong>: Kahoot games Monday through Wednesday count toward your score</li>
+</ul>
+<hr />
+<h2 id="pro-tips">Pro Tips</h2>
+<ul>
+<li><strong>Watch the $150 cap from Day 1.</strong> Set a Budgets alert immediately, default to Single-AZ and the smallest instance that works, prefer serverless, and shut down compute overnight. Exceeding $150 fails the whole W6 assignment regardless of how good your Must-Haves are — read the W6 Cost Discipline Memo before you deploy.</li>
+<li><strong>Build the Automated Cost Guard early on Tuesday, not late.</strong> The scheduled trigger needs time to actually fire so you can capture a CloudTrail Stop event before Friday. Give the Lambda a least-privilege role (only the EC2/RDS describe/stop actions — no wildcards), and grade yourself on a resource actually turned off, not on a notification. Don't expect the real Budgets cost trigger to fire in 48h — that's why the latency ADR exists.</li>
+<li><strong>The two-step tagging trap is the most common MH-COST-V failure.</strong> Tag your resources AND activate cost allocation tags in the Billing console in the same session Monday or Tuesday. Do not wait until Thursday to find out Cost Explorer has been blind to your tags all week.</li>
+<li><strong>MH-SEC is a Self-Healing Security Guard — detection without a fix is not enough.</strong> Build it as a Lambda + EventBridge, the same pattern as your Cost Guard. The most common failure this week is groups who detect the misconfiguration but never capture the CloudTrail event proving their Lambda actually fixed it. Create the violation on purpose so you have a clean before/after.</li>
+<li><strong>Install the CloudWatch Agent Monday or Tuesday.</strong> If you wait until Wednesday, you will have no historical memory or disk metrics in your dashboard by Thursday walkabout — and alarms on <code>CWAgent</code> metrics will be stuck in INSUFFICIENT_DATA.</li>
+<li><strong>Everyone needs to understand the Automated Cost Guard and the Self-Healing Security Guard.</strong> These are the two most likely topics in individual QnA, and they share the same Lambda + EventBridge pattern. Practice explaining: (1) how the schedule triggers the Cost Guard Lambda, how it decides what to stop from the <code>keep=true</code> tag, why the role is least-privilege, and why the real cost trigger lags; (2) how the Security Guard's EventBridge trigger fires the Lambda, how the Lambda detects the misconfiguration and fixes it via boto3, and why its role is least-privilege.</li>
+<li><strong>Going for the Optimization bonus? Capture the before state on Monday.</strong> Documenting a gp2→gp3 before state requires your volume to still be on gp2 (volume ID, size, IOPS baseline, cost per GB-month). Config-based TA findings fire within 48h; utilization-based ones do not — two fully documented remediations beat 12 undocumented findings.</li>
+</ul>
+<hr />
+<h2 id="key-aws-services-this-week">Key AWS Services This Week</h2>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>What it does</th>
+<th>Why it matters for your project</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EC2 Auto Scaling (ASG)</td>
+<td>Automatically adds/removes instances based on demand; replaces unhealthy instances</td>
+<td>Keeps your app running under load and after failures — the compute backbone for W7 load testing</td>
+</tr>
+<tr>
+<td>Application Load Balancer</td>
+<td>Distributes traffic across AZs; runs health checks</td>
+<td>HA traffic layer — health check type must be &quot;ELB&quot; for application-aware replacement</td>
+</tr>
+<tr>
+<td>Amazon EBS gp3</td>
+<td>Block storage with independently configurable IOPS (up to 16,000) and throughput</td>
+<td>Right-size your database and app storage for real performance at lower cost than gp2 — gp2→gp3 migration is an optional bonus this week</td>
+</tr>
+<tr>
+<td>AWS Trusted Advisor</td>
+<td>Automated best-practice checks across 5 pillars (cost, performance, security, fault tolerance, service limits)</td>
+<td>Optional bonus tool. In a 48h account, target <strong>config-based</strong> findings (unattached EBS, unassociated EIP, missing S3 lifecycle, public S3, open SG on 22/3389, EBS without snapshot) — remediate ≥2 with before/after. Config-based findings fire within 48h; utilization checks need ~14 days and won't.</td>
+</tr>
+<tr>
+<td>AWS Lambda + EventBridge</td>
+<td>Run code on a schedule or in response to events; call AWS APIs via boto3</td>
+<td>Powers BOTH MH-COST-A (the Automated Cost Guard stopping untagged EC2/RDS, proven by a CloudTrail Stop event) and MH-SEC (the Self-Healing Security Guard detecting and fixing one misconfiguration, proven by a CloudTrail fix event) — same pattern, least-privilege role both times</td>
+</tr>
+<tr>
+<td>Amazon CloudWatch + Agent</td>
+<td>Metrics, alarms, dashboards, log queries; Agent adds memory and disk from inside the OS</td>
+<td>MH-OBS foundation — without the Agent, memory and disk are invisible to CloudWatch</td>
+</tr>
+<tr>
+<td>AWS Cost Explorer</td>
+<td>Visualizes costs by service, account, and tag over time</td>
+<td>MH-COST-V core tool — requires cost allocation tag activation in Billing console before it can group by your tags</td>
+</tr>
+<tr>
+<td>AWS Budgets</td>
+<td>Cost and usage threshold alerts</td>
+<td>MH-COST-V threshold alert + MH-COST-A trigger (daily $150 → SNS → Cost Guard Lambda)</td>
+</tr>
+<tr>
+<td>Amazon S3 Block Public Access</td>
+<td>Account- and bucket-level switch that blocks public access; pair with a deny-unencrypted/non-TLS bucket policy</td>
+<td>MH-SEC — the recommended auto-fix target (public bucket → Lambda turns BPA on) and a supporting preventive control option</td>
+</tr>
+<tr>
+<td>AWS KMS (CMK)</td>
+<td>Manages encryption keys you create and control; key policy separates admin from use; supports automatic rotation</td>
+<td>MH-SEC supporting preventive control option — a CMK with rotation enabled on a data store. Only a CMK (not the AWS-managed key) demonstrates you control the encryption.</td>
+</tr>
+<tr>
+<td>AWS IAM Access Analyzer</td>
+<td>Identifies resources shared outside your account/zone of trust</td>
+<td>MH-SEC supporting preventive control option — enable it and triage at least one finding</td>
+</tr>
+<tr>
+<td>AWS Config (optional)</td>
+<td>Records resource configuration history; evaluates compliance rules</td>
+<td>NOT required for MH-SEC. Optional only as a detection trigger feeding your Self-Healing Security Guard Lambda — not the deliverable itself.</td>
+</tr>
+</tbody>
+</table>
+</main>
+<nav class="toc"><div class="toc-title">Trong trang này</div>
+<a href="#what-youll-learn-this-week">What You'll Learn This Week</a>
+<a href="#focus-areas">Focus Areas</a>
+<a href="#monday-high-availability-auto-scaling-costperformance-optimization" class="lvl3">Monday — High Availability, Auto Scaling &amp; Cost/Performance Optimization</a>
+<a href="#tuesday-cost-audit-governance-observability-foundations" class="lvl3">Tuesday — Cost Audit, Governance &amp; Observability Foundations</a>
+<a href="#wednesday-security-monitoring-kms-automated-remediation" class="lvl3">Wednesday — Security Monitoring, KMS &amp; Automated Remediation</a>
+<a href="#thursday-review-and-prep-day" class="lvl3">Thursday — Review and Prep Day</a>
+<a href="#friday-show-what-you-know" class="lvl3">Friday — Show What You Know</a>
+<a href="#this-weeks-deliverables">This Week's Deliverables</a>
+<a href="#how-youll-be-evaluated">How You'll Be Evaluated</a>
+<a href="#pro-tips">Pro Tips</a>
+<a href="#key-aws-services-this-week">Key AWS Services This Week</a></nav>
+</div>
+<script>
+(function(){
+  var root=document.documentElement, saved=localStorage.getItem("xb-theme");
+  if(saved){root.setAttribute("data-theme",saved);}
+  else if(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches){root.setAttribute("data-theme","dark");}
+  var btn=document.querySelector(".theme-btn");
+  function lbl(){return root.getAttribute("data-theme")==="dark"?"☀ Light":"☾ Dark";}
+  if(btn){btn.textContent=lbl();btn.addEventListener("click",function(){
+    var d=root.getAttribute("data-theme")==="dark"?"":"dark";
+    if(d){root.setAttribute("data-theme","dark");}else{root.removeAttribute("data-theme");}
+    localStorage.setItem("xb-theme",d);btn.textContent=lbl();});}
+  var s=document.querySelector(".search");
+  if(s){s.addEventListener("input",function(){
+    var q=this.value.toLowerCase();
+    if(q){document.querySelectorAll(".tree details").forEach(function(d){d.open=true;});}
+    document.querySelectorAll(".tree li").forEach(function(li){
+      var a=li.querySelector(":scope > a"); if(!a)return;
+      li.style.display=a.textContent.toLowerCase().indexOf(q)>-1?"":"none";});});}
+  var links=[].slice.call(document.querySelectorAll(".toc a")), map={};
+  links.forEach(function(l){map[l.getAttribute("href").slice(1)]=l;});
+  if(links.length){
+    var obs=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.isIntersecting){links.forEach(function(l){l.classList.remove("active");});
+        if(map[e.target.id])map[e.target.id].classList.add("active");}});},
+      {rootMargin:"-56px 0px -72% 0px"});
+    document.querySelectorAll(".content h2[id],.content h3[id]").forEach(function(h){obs.observe(h);});
+  }
+})();
+</script></body></html>

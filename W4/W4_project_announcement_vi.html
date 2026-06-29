@@ -1,0 +1,724 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>W4: Xây dựng AI thực sự trả lời được câu hỏi — XBrain</title><style>
+  :root{--bg:#fff;--side:#f7f7f8;--text:#242424;--muted:#616161;--link:#0067b8;--border:#e3e3e3;--code:#f1f1f1;--active:#e6f2fb;--bar:#0067b8;--hh:48px}
+  html[data-theme=dark]{--bg:#1b1a19;--side:#242322;--text:#e7e7e7;--muted:#a6a6a6;--link:#6cb8f6;--border:#3a3938;--code:#2c2c2b;--active:#26333f;--bar:#4db8ff}
+  *{box-sizing:border-box}html,body{margin:0}
+  body{background:var(--bg);color:var(--text);font:15px/1.65 "Segoe UI",system-ui,Arial,sans-serif}
+  a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}
+  .header{position:sticky;top:0;height:var(--hh);display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--bg);border-bottom:1px solid var(--border);z-index:30}
+  .header .brand{font-weight:600}.header .spacer{margin-left:auto}
+  .theme-btn{background:none;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:13px}
+  .layout{display:grid;grid-template-columns:300px minmax(0,1fr) 240px;align-items:start}
+  .side{position:sticky;top:var(--hh);height:calc(100vh - var(--hh));overflow:auto;background:var(--side);border-right:1px solid var(--border);padding:14px 10px}
+  .search{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);margin-bottom:8px;font-size:13px}
+  .home-link{display:block;padding:6px 8px;border-radius:6px;font-weight:600;font-size:13.5px;color:var(--text);margin-bottom:6px}
+  .home-link:hover{background:var(--active);text-decoration:none}.home-link.active{background:var(--active);box-shadow:inset 3px 0 0 var(--bar)}
+  .tree ul{list-style:none;margin:0;padding-left:13px}.tree>ul{padding-left:0}.tree li{margin:1px 0}
+  .tree a{display:block;padding:3px 8px;border-radius:5px;color:var(--text);font-size:13px;word-break:break-all}
+  .tree a:hover{background:var(--active);text-decoration:none}
+  .tree a.active{background:var(--active);font-weight:600;box-shadow:inset 3px 0 0 var(--bar)}
+  .tree summary{cursor:pointer;padding:3px 6px;border-radius:5px;font-size:13px;font-weight:600;list-style:none}
+  .tree summary::-webkit-details-marker{display:none}
+  .tree summary::before{content:"\25B8";display:inline-block;width:1em;color:var(--muted)}
+  .tree details[open]>summary::before{content:"\25BE"}
+  .tree summary:hover{background:var(--active)}
+  .content{padding:24px 44px 90px;max-width:880px}
+  .content h1{font-size:30px;margin:.1em 0 .5em}
+  .content h2{font-size:22px;margin:1.7em 0 .5em;scroll-margin-top:64px}
+  .content h3{font-size:17px;margin:1.2em 0 .4em;scroll-margin-top:64px}
+  .content table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+  .content th,.content td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  .content th{background:var(--side)}
+  .content code{background:var(--code);padding:2px 6px;border-radius:5px;font-size:.92em}
+  .content pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow:auto}
+  .content blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--link);background:var(--side);border-radius:6px}
+  .content ul{padding-left:20px}.content img{max-width:100%}
+  .toc{position:sticky;top:var(--hh);height:calc(100vh - var(--hh));overflow:auto;padding:24px 16px;font-size:13px}
+  .toc-title{font-weight:600;margin-bottom:10px}
+  .toc a{display:block;color:var(--muted);padding:3px 0 3px 10px;border-left:2px solid transparent;margin-left:-2px}
+  .toc a.lvl3{padding-left:22px}.toc a:hover{color:var(--link)}.toc a.active{color:var(--link);border-left-color:var(--link)}
+  .tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+  .tag-onsite{background:#fde7e7;color:#b91c1c}.tag-online{background:#e3f6e7;color:#15803d}
+  html[data-theme=dark] .tag-onsite{background:#4a1f1f;color:#ff9b9b}html[data-theme=dark] .tag-online{background:#1f3d28;color:#86e29c}
+  @media(max-width:1100px){.layout{grid-template-columns:280px minmax(0,1fr)}.toc{display:none}}
+  @media(max-width:760px){.layout{grid-template-columns:1fr}.side{display:none}}
+</style></head><body>
+<div class="header"><span class="brand">XBrain &times; AWS — Repo</span><span class="spacer"></span><button class="theme-btn">&#9790; Dark</button></div>
+<div class="layout">
+<aside class="side">
+  <input class="search" placeholder="Tìm file...">
+  <a class="home-link" href="../index.html">&#127968; Trang chủ (README)</a>
+  <div class="tree"><ul><li><details><summary>assets</summary><ul><li><a href="../assets/cost-w5.png" target="_blank">cost-w5.png</a></li></ul></details></li><li><details><summary>capstone-phase2</summary><ul><li><details><summary>data</summary><ul><li><details><summary>tf2-finops</summary><ul><li><a href="../capstone-phase2/data/tf2-finops/anomaly_labels_public.csv" target="_blank">anomaly_labels_public.csv</a></li><li><a href="../capstone-phase2/data/tf2-finops/cost_explorer_daily.csv" target="_blank">cost_explorer_daily.csv</a></li><li><a href="../capstone-phase2/data/tf2-finops/cur_line_items.csv" target="_blank">cur_line_items.csv</a></li><li><a href="../capstone-phase2/data/tf2-finops/README.html">README.md</a></li></ul></details></li></ul></details></li><li><details><summary>reference</summary><ul><li><a href="../capstone-phase2/reference/CAPSTONE_EVIDENCE_PACK_FORMAT.html">CAPSTONE_EVIDENCE_PACK_FORMAT.md</a></li><li><a href="../capstone-phase2/reference/TF1_TRIAGE_LEARNER.html">TF1_TRIAGE_LEARNER.md</a></li><li><a href="../capstone-phase2/reference/TF2_FINOPS_LEARNER.html">TF2_FINOPS_LEARNER.md</a></li><li><a href="../capstone-phase2/reference/TF3_SELFHEAL_LEARNER.html">TF3_SELFHEAL_LEARNER.md</a></li><li><a href="../capstone-phase2/reference/TF4_FORESIGHT_LEARNER.html">TF4_FORESIGHT_LEARNER.md</a></li></ul></details></li><li><details><summary>templates</summary><ul><li><details><summary>ai</summary><ul><li><details><summary>contracts</summary><ul><li><a href="../capstone-phase2/templates/ai/contracts/ai-api-contract.html">ai-api-contract.md</a></li><li><a href="../capstone-phase2/templates/ai/contracts/deployment-contract.html">deployment-contract.md</a></li><li><a href="../capstone-phase2/templates/ai/contracts/telemetry-contract.html">telemetry-contract.md</a></li></ul></details></li><li><details><summary>docs</summary><ul><li><a href="../capstone-phase2/templates/ai/docs/01_requirements.html">01_requirements.md</a></li><li><a href="../capstone-phase2/templates/ai/docs/02_solution_design.html">02_solution_design.md</a></li><li><a href="../capstone-phase2/templates/ai/docs/03_ai_engine_spec.html">03_ai_engine_spec.md</a></li><li><a href="../capstone-phase2/templates/ai/docs/04_eval_report.html">04_eval_report.md</a></li><li><a href="../capstone-phase2/templates/ai/docs/05_adrs.html">05_adrs.md</a></li></ul></details></li></ul></details></li><li><details><summary>cdo</summary><ul><li><details><summary>docs</summary><ul><li><a href="../capstone-phase2/templates/cdo/docs/01_requirements_analysis.html">01_requirements_analysis.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/02_infra_design.html">02_infra_design.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/03_security_design.html">03_security_design.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/04_deployment_design.html">04_deployment_design.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/05_cost_analysis.html">05_cost_analysis.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/07_test_eval_report.html">07_test_eval_report.md</a></li><li><a href="../capstone-phase2/templates/cdo/docs/08_adrs.html">08_adrs.md</a></li></ul></details></li></ul></details></li><li><a href="../capstone-phase2/templates/README.html">README.md</a></li></ul></details></li><li><a href="../capstone-phase2/W11_W12_capstone_announcement.html">W11_W12_capstone_announcement.md</a></li></ul></details></li><li><details><summary>W1</summary><ul><li><details><summary>schedule</summary><ul><li><a href="../W1/schedule/README.html">README.md</a></li></ul></details></li></ul></details></li><li><details><summary>W2</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W2/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W2/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W2/slides/Bedrock_Overall.pdf" target="_blank">Bedrock_Overall.pdf</a></li><li><a href="../W2/slides/README.html">README.md</a></li></ul></details></li><li><a href="../W2/W2_learner_guide.html">W2_learner_guide.md</a></li><li><a href="../W2/W2_project_announcement.html">W2_project_announcement.md</a></li></ul></details></li><li><details><summary>W3</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W3/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W3/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W3/slides/README.html">README.md</a></li><li><a href="../W3/slides/w3-xbrain.ppt" target="_blank">w3-xbrain.ppt</a></li></ul></details></li><li><a href="../W3/W3_learner_guide_vi.html">W3_learner_guide_vi.md</a></li><li><a href="../W3/W3_learner_guide.html">W3_learner_guide.md</a></li><li><a href="../W3/W3_project_announcement_vi.html">W3_project_announcement_vi.md</a></li><li><a href="../W3/W3_project_announcement.html">W3_project_announcement.md</a></li></ul></details></li><li><details open><summary>W4</summary><ul><li><details><summary>data_package</summary><ul><li><details><summary>knowledge_base</summary><ul><li><a href="../W4/data_package/knowledge_base/api_reference_v1_archived.html">api_reference_v1_archived.md</a></li><li><a href="../W4/data_package/knowledge_base/api_reference_v2.html">api_reference_v2.md</a></li><li><a href="../W4/data_package/knowledge_base/api_webhooks.html">api_webhooks.md</a></li><li><a href="../W4/data_package/knowledge_base/architecture_review_feb_2026.html">architecture_review_feb_2026.md</a></li><li><a href="../W4/data_package/knowledge_base/capacity_planning_q2_2026.html">capacity_planning_q2_2026.md</a></li><li><a href="../W4/data_package/knowledge_base/change_management_policy.html">change_management_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/company_overview.html">company_overview.md</a></li><li><a href="../W4/data_package/knowledge_base/cost_optimization_initiative.html">cost_optimization_initiative.md</a></li><li><a href="../W4/data_package/knowledge_base/deployment_policy.html">deployment_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/incident_response_policy.html">incident_response_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/monitoring_dashboard_guide.html">monitoring_dashboard_guide.md</a></li><li><a href="../W4/data_package/knowledge_base/on_call_handbook.html">on_call_handbook.md</a></li><li><a href="../W4/data_package/knowledge_base/onboarding_guide.html">onboarding_guide.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC001_paymentgw_jan.html">postmortem_INC001_paymentgw_jan.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC004_authsvc.html">postmortem_INC004_authsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC005_paymentgw_mar.html">postmortem_INC005_paymentgw_mar.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC006_frauddetector.html">postmortem_INC006_frauddetector.md</a></li><li><a href="../W4/data_package/knowledge_base/postmortem_INC008_reportingsvc.html">postmortem_INC008_reportingsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/q1_2026_review_notes.html">q1_2026_review_notes.md</a></li><li><a href="../W4/data_package/knowledge_base/q4_2025_planning_notes.html">q4_2025_planning_notes.md</a></li><li><a href="../W4/data_package/knowledge_base/runbook_frauddetector_model_retraining.html">runbook_frauddetector_model_retraining.md</a></li><li><a href="../W4/data_package/knowledge_base/runbook_paymentgw_circuit_breaker.html">runbook_paymentgw_circuit_breaker.md</a></li><li><a href="../W4/data_package/knowledge_base/security_policy.html">security_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/service_authsvc.html">service_authsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/service_frauddetector.html">service_frauddetector.md</a></li><li><a href="../W4/data_package/knowledge_base/service_notificationsvc.html">service_notificationsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/service_ordersvc.html">service_ordersvc.md</a></li><li><a href="../W4/data_package/knowledge_base/service_paymentgw.html">service_paymentgw.md</a></li><li><a href="../W4/data_package/knowledge_base/service_reportingsvc.html">service_reportingsvc.md</a></li><li><a href="../W4/data_package/knowledge_base/sla_policy.html">sla_policy.md</a></li><li><a href="../W4/data_package/knowledge_base/team_commerce.html">team_commerce.md</a></li><li><a href="../W4/data_package/knowledge_base/team_data.html">team_data.md</a></li><li><a href="../W4/data_package/knowledge_base/team_engagement.html">team_engagement.md</a></li><li><a href="../W4/data_package/knowledge_base/team_platform.html">team_platform.md</a></li><li><a href="../W4/data_package/knowledge_base/tech_radar_2026.html">tech_radar_2026.md</a></li><li><a href="../W4/data_package/knowledge_base/weekly_standup_mar10_2026.html">weekly_standup_mar10_2026.md</a></li></ul></details></li><li><details><summary>scripts</summary><ul><li><a href="../W4/data_package/scripts/monitoring_api.py" target="_blank">monitoring_api.py</a></li><li><a href="../W4/data_package/scripts/pyproject.toml" target="_blank">pyproject.toml</a></li><li><a href="../W4/data_package/scripts/seed_data.py" target="_blank">seed_data.py</a></li></ul></details></li><li><details><summary>structured_data</summary><ul><li><a href="../W4/data_package/structured_data/daily_metrics.csv" target="_blank">daily_metrics.csv</a></li><li><a href="../W4/data_package/structured_data/incidents.csv" target="_blank">incidents.csv</a></li><li><a href="../W4/data_package/structured_data/monthly_costs.csv" target="_blank">monthly_costs.csv</a></li><li><a href="../W4/data_package/structured_data/sla_targets.csv" target="_blank">sla_targets.csv</a></li></ul></details></li><li><a href="../W4/data_package/README.html">README.md</a></li></ul></details></li><li><details><summary>mentoring</summary><ul><li><a href="../W4/mentoring/session1-ai-behind-the-flashy-scene.html">session1-ai-behind-the-flashy-scene.html</a></li><li><a href="../W4/mentoring/session2-genai-in-practice.html">session2-genai-in-practice.html</a></li></ul></details></li><li><details><summary>questions</summary><ul><li><details><summary>student</summary><ul><li><a href="../W4/questions/student/L1_questions.json" target="_blank">L1_questions.json</a></li><li><a href="../W4/questions/student/L2_questions.json" target="_blank">L2_questions.json</a></li><li><a href="../W4/questions/student/L3_questions.json" target="_blank">L3_questions.json</a></li><li><a href="../W4/questions/student/L4_conversation_scripts.json" target="_blank">L4_conversation_scripts.json</a></li><li><a href="../W4/questions/student/L5_investigation_prompts.json" target="_blank">L5_investigation_prompts.json</a></li></ul></details></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W4/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W4/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W4/slides/Agentic AI on AWS Fundamentals.pdf" target="_blank">Agentic AI on AWS Fundamentals.pdf</a></li><li><a href="../W4/slides/AWS Agentic AI Architecture Patterns.pdf" target="_blank">AWS Agentic AI Architecture Patterns.pdf</a></li><li><a href="../W4/slides/README.html">README.md</a></li></ul></details></li><li><a href="../W4/W4_learner_guide_vi.html">W4_learner_guide_vi.md</a></li><li><a href="../W4/W4_learner_guide.html">W4_learner_guide.md</a></li><li><a href="../W4/W4_project_announcement_vi.html" class="active">W4_project_announcement_vi.md</a></li><li><a href="../W4/W4_project_announcement.html">W4_project_announcement.md</a></li></ul></details></li><li><details><summary>W5</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W5/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W5/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W5/slides/slides.pdf" target="_blank">slides.pdf</a></li><li><a href="../W5/slides/XBrain_W5_Hard_things_about_your_cloud.pdf" target="_blank">XBrain_W5_Hard_things_about_your_cloud.pdf</a></li></ul></details></li><li><a href="../W5/W5_learner_guide_vi.html">W5_learner_guide_vi.md</a></li><li><a href="../W5/W5_learner_guide.html">W5_learner_guide.md</a></li><li><a href="../W5/W5_project_announcement_vi.html">W5_project_announcement_vi.md</a></li><li><a href="../W5/W5_project_announcement.html">W5_project_announcement.md</a></li></ul></details></li><li><details><summary>W6</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W6/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W6/schedule/README.html">README.md</a></li></ul></details></li><li><a href="../W6/W6_learner_guide_vi.html">W6_learner_guide_vi.md</a></li><li><a href="../W6/W6_learner_guide.html">W6_learner_guide.md</a></li><li><a href="../W6/W6_project_announcement_vi.html">W6_project_announcement_vi.md</a></li><li><a href="../W6/W6_project_announcement.html">W6_project_announcement.md</a></li></ul></details></li><li><details><summary>W7</summary><ul><li><details><summary>recordings</summary><ul><li><a href="../W7/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W7/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W7/slides/README.html">README.md</a></li></ul></details></li><li><details><summary>starter_apps</summary><ul><li><details><summary>budgetbot</summary><ul><li><details><summary>frontend</summary><ul><li><a href="../W7/starter_apps/budgetbot/frontend/index.html">index.html</a></li></ul></details></li><li><details><summary>sample_data</summary><ul><li><a href="../W7/starter_apps/budgetbot/sample_data/bank_statement_q2_2026.csv" target="_blank">bank_statement_q2_2026.csv</a></li><li><a href="../W7/starter_apps/budgetbot/sample_data/README.html">README.md</a></li><li><a href="../W7/starter_apps/budgetbot/sample_data/smoke_test_5_rows.csv" target="_blank">smoke_test_5_rows.csv</a></li></ul></details></li><li><details><summary>src</summary><ul><li><details><summary>adapters</summary><ul><li><a href="../W7/starter_apps/budgetbot/src/adapters/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/adapters/ai.py" target="_blank">ai.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/adapters/factory.py" target="_blank">factory.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/adapters/storage.py" target="_blank">storage.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/adapters/userstore.py" target="_blank">userstore.py</a></li></ul></details></li><li><a href="../W7/starter_apps/budgetbot/src/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/app.py" target="_blank">app.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/config.py" target="_blank">config.py</a></li><li><a href="../W7/starter_apps/budgetbot/src/handlers.py" target="_blank">handlers.py</a></li></ul></details></li><li><details><summary>tests</summary><ul><li><a href="../W7/starter_apps/budgetbot/tests/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/budgetbot/tests/test_smoke.py" target="_blank">test_smoke.py</a></li></ul></details></li><li><a href="../W7/starter_apps/budgetbot/.env.example" target="_blank">.env.example</a></li><li><a href="../W7/starter_apps/budgetbot/.gitignore" target="_blank">.gitignore</a></li><li><a href="../W7/starter_apps/budgetbot/Makefile" target="_blank">Makefile</a></li><li><a href="../W7/starter_apps/budgetbot/README.html">README.md</a></li><li><a href="../W7/starter_apps/budgetbot/requirements-optional.txt" target="_blank">requirements-optional.txt</a></li><li><a href="../W7/starter_apps/budgetbot/requirements.txt" target="_blank">requirements.txt</a></li></ul></details></li><li><details><summary>dochub</summary><ul><li><details><summary>frontend</summary><ul><li><a href="../W7/starter_apps/dochub/frontend/index.html">index.html</a></li></ul></details></li><li><details><summary>sample_data</summary><ul><li><a href="../W7/starter_apps/dochub/sample_data/manifest.json" target="_blank">manifest.json</a></li><li><a href="../W7/starter_apps/dochub/sample_data/SOURCES.html">SOURCES.md</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-acme__agreement__employment_agreement.txt" target="_blank">tenant-acme__agreement__employment_agreement.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-acme__agreement__master_services_agreement.txt" target="_blank">tenant-acme__agreement__master_services_agreement.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-globex__contract__sales_purchase_agreement.txt" target="_blank">tenant-globex__contract__sales_purchase_agreement.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-globex__nda__non_disclosure_agreement.txt" target="_blank">tenant-globex__nda__non_disclosure_agreement.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-initech__addendum__data_processing_addendum.txt" target="_blank">tenant-initech__addendum__data_processing_addendum.txt</a></li><li><a href="../W7/starter_apps/dochub/sample_data/tenant-initech__license__software_license.txt" target="_blank">tenant-initech__license__software_license.txt</a></li></ul></details></li><li><details><summary>src</summary><ul><li><details><summary>adapters</summary><ul><li><a href="../W7/starter_apps/dochub/src/adapters/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/ai.py" target="_blank">ai.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/factory.py" target="_blank">factory.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/storage.py" target="_blank">storage.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/userstore.py" target="_blank">userstore.py</a></li><li><a href="../W7/starter_apps/dochub/src/adapters/vector.py" target="_blank">vector.py</a></li></ul></details></li><li><a href="../W7/starter_apps/dochub/src/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/dochub/src/app.py" target="_blank">app.py</a></li><li><a href="../W7/starter_apps/dochub/src/config.py" target="_blank">config.py</a></li><li><a href="../W7/starter_apps/dochub/src/handlers.py" target="_blank">handlers.py</a></li></ul></details></li><li><details><summary>tests</summary><ul><li><a href="../W7/starter_apps/dochub/tests/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/dochub/tests/test_smoke.py" target="_blank">test_smoke.py</a></li></ul></details></li><li><a href="../W7/starter_apps/dochub/.env.example" target="_blank">.env.example</a></li><li><a href="../W7/starter_apps/dochub/.gitignore" target="_blank">.gitignore</a></li><li><a href="../W7/starter_apps/dochub/Makefile" target="_blank">Makefile</a></li><li><a href="../W7/starter_apps/dochub/README.html">README.md</a></li><li><a href="../W7/starter_apps/dochub/requirements-optional.txt" target="_blank">requirements-optional.txt</a></li><li><a href="../W7/starter_apps/dochub/requirements.txt" target="_blank">requirements.txt</a></li></ul></details></li><li><details><summary>studybot</summary><ul><li><details><summary>frontend</summary><ul><li><a href="../W7/starter_apps/studybot/frontend/index.html">index.html</a></li></ul></details></li><li><details><summary>sample_data</summary><ul><li><a href="../W7/starter_apps/studybot/sample_data/SOURCES.html">SOURCES.md</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_01_computer.txt" target="_blank">wiki_01_computer.txt</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_02_internet.txt" target="_blank">wiki_02_internet.txt</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_03_mathematics.txt" target="_blank">wiki_03_mathematics.txt</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_04_photosynthesis.txt" target="_blank">wiki_04_photosynthesis.txt</a></li><li><a href="../W7/starter_apps/studybot/sample_data/wiki_05_energy.txt" target="_blank">wiki_05_energy.txt</a></li></ul></details></li><li><details><summary>src</summary><ul><li><details><summary>adapters</summary><ul><li><a href="../W7/starter_apps/studybot/src/adapters/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/ai.py" target="_blank">ai.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/factory.py" target="_blank">factory.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/storage.py" target="_blank">storage.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/userstore.py" target="_blank">userstore.py</a></li><li><a href="../W7/starter_apps/studybot/src/adapters/vector.py" target="_blank">vector.py</a></li></ul></details></li><li><a href="../W7/starter_apps/studybot/src/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/studybot/src/app.py" target="_blank">app.py</a></li><li><a href="../W7/starter_apps/studybot/src/config.py" target="_blank">config.py</a></li><li><a href="../W7/starter_apps/studybot/src/handlers.py" target="_blank">handlers.py</a></li></ul></details></li><li><details><summary>tests</summary><ul><li><a href="../W7/starter_apps/studybot/tests/__init__.py" target="_blank">__init__.py</a></li><li><a href="../W7/starter_apps/studybot/tests/test_smoke.py" target="_blank">test_smoke.py</a></li></ul></details></li><li><a href="../W7/starter_apps/studybot/.env.example" target="_blank">.env.example</a></li><li><a href="../W7/starter_apps/studybot/.gitignore" target="_blank">.gitignore</a></li><li><a href="../W7/starter_apps/studybot/Makefile" target="_blank">Makefile</a></li><li><a href="../W7/starter_apps/studybot/README.html">README.md</a></li><li><a href="../W7/starter_apps/studybot/requirements-optional.txt" target="_blank">requirements-optional.txt</a></li><li><a href="../W7/starter_apps/studybot/requirements.txt" target="_blank">requirements.txt</a></li></ul></details></li><li><a href="../W7/starter_apps/README.html">README.md</a></li></ul></details></li><li><a href="../W7/W7_cost_estimates.html">W7_cost_estimates.md</a></li><li><a href="../W7/W7_hackathon_rules.txt" target="_blank">W7_hackathon_rules.txt</a></li><li><a href="../W7/W7_learner_guide.html">W7_learner_guide.md</a></li><li><a href="../W7/W7_project_announcement.html">W7_project_announcement.md</a></li></ul></details></li><li><details><summary>W8</summary><ul><li><details><summary>exercise_submission</summary><ul><li><a href="../W8/exercise_submission/README.html">README.md</a></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W8/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W8/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W8/slides/README.html">README.md</a></li></ul></details></li><li><a href="../W8/Jira_Working_Rules.html">Jira_Working_Rules.md</a></li><li><a href="../W8/W8_phase2_announcement_cloud.html">W8_phase2_announcement_cloud.md</a></li></ul></details></li><li><details><summary>W9</summary><ul><li><details><summary>exercise_submission</summary><ul><li><a href="../W9/exercise_submission/README.html">README.md</a></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W9/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W9/schedule/README.html">README.md</a></li></ul></details></li><li><a href="../W9/W9_phase2_announcement_cloud.html">W9_phase2_announcement_cloud.md</a></li></ul></details></li><li><details><summary>W10</summary><ul><li><details><summary>exercise_submission</summary><ul><li><a href="../W10/exercise_submission/README.html">README.md</a></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W10/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W10/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W10/slides/README.html">README.md</a></li><li><a href="../W10/slides/w10_afternoon_secrets_supply_chain.html">w10_afternoon_secrets_supply_chain.html</a></li></ul></details></li><li><a href="../W10/W10_phase2_announcement_cloud.html">W10_phase2_announcement_cloud.md</a></li></ul></details></li><li><details><summary>W11</summary><ul><li><details><summary>exercise_submission</summary><ul><li><a href="../W11/exercise_submission/README.html">README.md</a></li></ul></details></li><li><details><summary>recordings</summary><ul><li><a href="../W11/recordings/README.html">README.md</a></li></ul></details></li><li><details><summary>schedule</summary><ul><li><a href="../W11/schedule/README.html">README.md</a></li></ul></details></li><li><details><summary>slides</summary><ul><li><a href="../W11/slides/README.html">README.md</a></li></ul></details></li></ul></details></li><li><a href="../.gitignore" target="_blank">.gitignore</a></li><li><a href="../GUIDELINE.html">GUIDELINE.md</a></li></ul></div>
+</aside>
+<main class="content"><hr />
+<h2 id="week-4-title-w4-xay-dung-ai-thuc-su-tra-loi-uoc-cau-hoi-audience-students-release-thu-hai-2026-05-03-sang-deadline-thu-sau-2026-05-08-thuyet-trinh-nhom">week: 4
+title: &quot;W4: Xây dựng AI thực sự trả lời được câu hỏi&quot;
+audience: students
+release: &quot;Thứ Hai 2026-05-03 sáng&quot;
+deadline: &quot;Thứ Sáu 2026-05-08, thuyết trình nhóm&quot;</h2>
+<h1 id="w4-xay-dung-ai-thuc-su-tra-loi-uoc-cau-hoi">W4: Xây dựng AI thực sự trả lời được câu hỏi</h1>
+<blockquote>
+<p>3 tháng 5 — 8 tháng 5, 2026</p>
+</blockquote>
+<hr />
+<h2 id="thu-thach-tuan-nay">Thử thách tuần này</h2>
+<p>Các bạn sẽ xây dựng một AI system trả lời câu hỏi về <strong>GeekBrain</strong> — một fintech startup đang vận hành sáu production service. Các bạn sẽ nhận được một data package gồm: các file markdown mô tả cách công ty hoạt động, CSV files chứa lịch sử cost và performance, một seed script để load CSV vào database, và một monitoring API trả về live system state.</p>
+<p><strong>System của bạn phải trả lời câu hỏi ở bốn cấp độ tăng dần.</strong> Mỗi cấp độ đòi hỏi một khả năng mà cấp trước chưa có. Các cấp độ được định nghĩa bởi những gì câu hỏi yêu cầu — không phải bởi architecture phải xây dựng như thế nào.</p>
+<p><strong>System của bạn phải trả lời câu hỏi ở bốn cấp độ tăng dần.</strong> Chúng tôi cung cấp data. Bạn thiết kế architecture.</p>
+<hr />
+<h2 id="bon-cap-o">Bốn cấp độ</h2>
+<p>Các cấp độ có tính tích lũy. Mỗi cấp xây dựng trên cấp trước. Không thể bỏ qua cấp — L3 yêu cầu nền tảng L1-L2 đang hoạt động, và L4 yêu cầu tools từ L3 phải hoạt động được.</p>
+<p>Bạn có thể tự build từng layer — retrieval, tool routing, orchestration, memory — sử dụng framework như LangChain, LlamaIndex, hoặc gọi API trực tiếp. Hoặc bạn có thể dùng managed service như <strong>Amazon Bedrock AgentCore</strong>, xử lý orchestration, tool routing, KB sync, và session memory cho bạn. Dù chọn cách nào, bạn vẫn phải tự viết tool functions, agent instructions, và setup knowledge base. Yêu cầu từng level và tiêu chí đạt đều giống nhau.</p>
+<hr />
+<h3 id="l1-retrieval-simple-rag">L1 — Retrieval (Simple RAG)</h3>
+<p><strong>Câu hỏi yêu cầu gì:</strong> Một fact đơn giản có trong một document.</p>
+<p><em>Ví dụ: &quot;What is GeekBrain's API rate limit for PaymentGW?&quot;</em></p>
+<p><em>Ví dụ: &quot;Who is the Team Platform lead?&quot;</em></p>
+<p><strong>Điều kiện pass:</strong> System trả về đúng fact và nêu tên source document.</p>
+<p><strong>Architecture hint — chọn một trong ba:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Trông như thế nào</th>
+<th>Pros / Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bedrock Knowledge Bases</strong></td>
+<td>Upload docs lên S3 → Tạo Bedrock KB → Gọi <code>RetrieveAndGenerate</code> API</td>
+<td>Set up nhanh nhất. AWS lo chunking, embedding, vector store. Ít kiểm soát retrieval quality.</td>
+</tr>
+<tr>
+<td><strong>Custom RAG pipeline</strong></td>
+<td>Tự chunk docs → Embed bằng Titan/OpenAI → Lưu vào OpenSearch hoặc ChromaDB/FAISS → Retrieve top-K → Gửi cho LLM</td>
+<td>Kiểm soát hoàn toàn chunking, embedding model, retrieval parameters. Tốn thời gian setup hơn.</td>
+</tr>
+<tr>
+<td><strong>Bedrock KB + custom prompt</strong></td>
+<td>Dùng Bedrock KB <code>Retrieve</code> API (trả về raw chunks) → Tự build prompt với chunks → Gọi LLM</td>
+<td>Tốt nhất của cả hai: managed retrieval + kiểm soát hoàn toàn prompt. Điểm khởi đầu được khuyến nghị.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Các bước để chạy được L1:</strong></p>
+<ol>
+<li>Upload 36 knowledge base markdown file lên S3 bucket</li>
+<li>Tạo Bedrock Knowledge Base trỏ vào S3 bucket đó</li>
+<li>Chọn embedding model (Amazon Titan Embeddings v2 là mặc định)</li>
+<li>Sync knowledge base (chờ sync hoàn tất)</li>
+<li>Test với <code>Retrieve</code> API — có trả về đúng chunk cho câu hỏi đơn giản không?</li>
+<li>Gửi retrieved chunks + câu hỏi cho LLM (Claude Sonnet qua Bedrock) kèm system prompt: &quot;Answer the question using only the provided context. Cite the source document.&quot;</li>
+<li>Kiểm tra: hỏi &quot;Who is the Team Platform lead?&quot; — câu trả lời phải là &quot;Alex Chen&quot; từ <code>team_platform.md</code></li>
+</ol>
+<p><strong>Nếu L1 chạy được, bạn đã có nền tảng. Mọi thứ khác đều xây trên đó.</strong></p>
+<hr />
+<h3 id="l2-multi-source-retrieval-advanced-rag">L2 — Multi-Source Retrieval (Advanced RAG)</h3>
+<p><strong>Câu hỏi yêu cầu gì:</strong> Thông tin đến từ hai hay nhiều document, hoặc câu trả lời mà hai document mâu thuẫn nhau và system phải xác định cái nào đúng.</p>
+<p><em>Ví dụ: &quot;If Team Commerce has a P1 bug in OrderSvc on Friday night, can they deploy a fix? What approvals do they need?&quot;</em></p>
+<p><em>Ví dụ: &quot;What is GeekBrain's API rate limit for PaymentGW?&quot; (Hai document cho hai con số khác nhau — system phải xác định cái nào là hiện tại.)</em></p>
+<p><strong>Điều kiện pass:</strong> System tổng hợp từ nhiều nguồn và giải quyết conflict đúng.</p>
+<p><strong>Architecture hint — cải thiện L1 pipeline của bạn:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>Tác dụng</th>
+<th>Khi nào dùng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Increase top-K</strong></td>
+<td>Retrieve nhiều chunk hơn (ví dụ K=10 thay vì K=3)</td>
+<td>Khi câu trả lời trải rộng nhiều document</td>
+</tr>
+<tr>
+<td><strong>Hybrid search</strong></td>
+<td>Kết hợp vector search (semantic) + keyword search (BM25)</td>
+<td>Khi câu hỏi đề cập exact ID, error code, hoặc tên mà vector search bỏ sót</td>
+</tr>
+<tr>
+<td><strong>Metadata filtering</strong></td>
+<td>Lọc chunks theo ngày, version, status trước khi ranking</td>
+<td>Khi documents mâu thuẫn nhau (v1 vs v2, archived vs current)</td>
+</tr>
+<tr>
+<td><strong>Improved system prompt</strong></td>
+<td>Nói với LLM: &quot;If sources conflict, prefer the most recent version. State the conflict.&quot;</td>
+<td>Luôn luôn — cái này miễn phí và hiệu quả cao</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Các bước để chạy được L2:</strong></p>
+<ol>
+<li>Bắt đầu từ L1 pipeline đang hoạt động</li>
+<li>Tăng retrieval K từ 3-5 lên 8-10 chunk</li>
+<li>Thêm vào system prompt: &quot;When multiple documents provide different information, check their dates and version numbers. Prefer the most recent. If documents conflict, explain which you trust and why.&quot;</li>
+<li>Test với conflict question: &quot;What is PaymentGW's API rate limit?&quot; — system phải retrieve cả v1 (500) lẫn v2 (1000) và xác định đúng v2 là current</li>
+<li>Test với multi-doc question: &quot;Can Team Commerce deploy on Friday night?&quot; — system phải kết hợp deployment_policy.md + incident_response_policy.md + thông tin team</li>
+</ol>
+<hr />
+<h3 id="l3-retrieval-tools-tool-augmented-rag">L3 — Retrieval + Tools (Tool-Augmented RAG)</h3>
+<p><strong>Câu hỏi yêu cầu gì:</strong> Câu trả lời không thể tìm thấy trong bất kỳ document nào. Một số câu hỏi cần current system state từ monitoring API. Một số cần số liệu lịch sử từ database. Một số cần cả hai.</p>
+<p><em>Ví dụ: &quot;What was PaymentGW's total infrastructure cost in Q1/2026?&quot;</em></p>
+<p><em>Ví dụ: &quot;Is PaymentGW's latency right now better or worse than its Q1 average?&quot;</em></p>
+<p><strong>Điều kiện pass:</strong> System trả về câu trả lời đúng số liệu dựa trên real data.</p>
+<p><strong>Architecture hint — thêm tools vào L2 pipeline:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Trông như thế nào</th>
+<th>Pros / Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bedrock Agents</strong></td>
+<td>Tạo Agent với Action Groups (Lambda functions) + KB. Agent quyết định mỗi query: retrieve từ KB, gọi tool, hoặc cả hai.</td>
+<td>Managed orchestration. Agent tự handle routing. Ít kiểm soát thời điểm tool được gọi.</td>
+</tr>
+<tr>
+<td><strong>Framework tool integration</strong></td>
+<td>Dùng LangChain hoặc LlamaIndex để define tools. Framework handle vòng lặp LLM ↔ tool call.</td>
+<td>Kiểm soát routing tốt hơn. Quen thuộc nếu biết framework.</td>
+</tr>
+<tr>
+<td><strong>Raw function calling</strong></td>
+<td>Gọi LLM API trực tiếp với tool definitions trong request. Parse tool call responses trong code. Execute. Feed result trở lại.</td>
+<td>Kiểm soát hoàn toàn. Nhiều code nhất. Tốt nhất để hiểu điều gì đang xảy ra.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Các bước để chạy được L3:</strong></p>
+<ol>
+<li><p><strong>Set up data layer trước:</strong></p>
+<ul>
+<li>Chạy <code>seed_data.py</code> để load CSV vào database (SQLite để bắt đầu nhanh nhất: <code>python seed_data.py --db-type sqlite</code>)</li>
+<li>Start <code>monitoring_api.py</code> locally (<code>uvicorn monitoring_api:app --port 8000</code>)</li>
+<li>Test cả hai: query database thủ công, hit từng API endpoint</li>
+</ul>
+</li>
+<li><p><strong>Build ít nhất 2 tool function:</strong></p>
+<ul>
+<li><strong>Tool 1 — Database Query:</strong> Nhận SQL query string, execute với database, trả về rows. Dùng cho cost questions, incident queries, SLA lookups.</li>
+<li><strong>Tool 2 — Service Metrics:</strong> Gọi <code>GET /metrics/{service_name}</code> trên monitoring API, trả về current latency, error rate, requests/min.</li>
+</ul>
+</li>
+<li><p><strong>Register tools với LLM:</strong></p>
+<ul>
+<li>Viết tool descriptions rõ ràng: mỗi tool trả về gì, khi nào dùng (current data vs historical data)</li>
+<li>Nếu dùng Bedrock Agents: tạo Action Groups với Lambda functions</li>
+<li>Nếu dùng framework/raw API: define tools trong code</li>
+</ul>
+</li>
+<li><p><strong>Test routing:</strong></p>
+<ul>
+<li>&quot;What was PaymentGW's total cost in Q1 2026?&quot; → system phải gọi Database Query tool → trả về $16,500</li>
+<li>&quot;What is PaymentGW's current p99 latency?&quot; → system phải gọi Service Metrics tool → trả về ~185ms</li>
+<li>&quot;Is PaymentGW within its latency SLA?&quot; → system phải gọi CẢ HAI (metrics cho current, DB cho target) → so sánh 185ms vs 200ms</li>
+</ul>
+</li>
+<li><p><strong>Kiểm tra số liệu phải đúng</strong> — L3 được chấm điểm dựa trên numerical accuracy. Sai số = không có credit.</p>
+</li>
+</ol>
+<p><strong>Lỗi phổ biến ở L3:</strong></p>
+<ul>
+<li>Tool descriptions quá mơ hồ → LLM gọi nhầm tool</li>
+<li>Monitoring API không chạy → tool call fail silently → LLM hallucinate số</li>
+<li>Database chưa seed → query trả về rỗng → LLM tự bịa data</li>
+<li>Không test với câu hỏi L3 thực tế trước thứ Sáu</li>
+</ul>
+<hr />
+<h3 id="l4-retrieval-tools-memory-10-iem">L4 — Retrieval + Tools + Memory (10% điểm)</h3>
+<p><strong>Câu hỏi yêu cầu gì:</strong> Một cuộc hội thoại multi-turn trong đó các câu hỏi follow-up tham chiếu đến các lượt trước. Người dùng không nhắc lại context.</p>
+<p><em>Ví dụ:</em></p>
+<ul>
+<li><em>Turn 1: &quot;Which service had the highest infrastructure cost in March 2026?&quot;</em></li>
+<li><em>Turn 2: &quot;What was the main cause of the cost increase that month?&quot;</em></li>
+<li><em>Turn 3: &quot;Which team is responsible?&quot;</em></li>
+<li><em>Turn 4: &quot;The postmortem mentioned a review deadline. Is it overdue?&quot;</em></li>
+</ul>
+<p><strong>Điều kiện pass:</strong> System xử lý đúng cuộc hội thoại 3-4 turn. Các follow-up dùng &quot;that service&quot;, &quot;their team&quot;, &quot;the same issue&quot; được resolve mà người dùng không cần nhắc lại.</p>
+<p><strong>Hãy nghĩ về điều này:</strong> L3 system của bạn xử lý mỗi câu hỏi độc lập. Hỏi nó &quot;Which service had the highest cost?&quot; rồi hỏi tiếp &quot;Why did its costs spike?&quot; — nó không biết &quot;its&quot; đề cập đến cái gì. Câu hỏi thứ hai đến với zero context từ câu đầu.</p>
+<p>Không có memory, mỗi câu hỏi là độc lập. LLM không biết &quot;its costs&quot; hay &quot;that service&quot; đề cập đến gì — vì nó chưa bao giờ thấy câu trả lời Turn 1. L4 là về việc giải quyết vấn đề này: làm thế nào để duy trì context qua các turn để cuộc hội thoại diễn ra liên tục?</p>
+<p>Đây là bài toán <strong>context engineering</strong>. Mọi thứ LLM nhận được — system prompt, retrieved chunks, tool results, conversation history — đều cạnh tranh không gian trong context window. Bạn phải quyết định cái gì cần include và cái gì bỏ ra. Câu hỏi là: làm thế nào để đảm bảo LLM vẫn resolve được &quot;that service&quot; hay &quot;their team&quot; ba turn sau — mà không làm ngập context và làm giảm chất lượng câu trả lời?</p>
+<hr />
+<h3 id="bonus-opportunities-1.0-toi-a">Bonus Opportunities (+1.0 tối đa)</h3>
+<p>Bonus chỉ được chấm nếu L1-L3 đang hoạt động. Bonus KHÔNG tính vào điểm cơ bản 10 điểm.</p>
+<p><strong>Bonus A — Observability Dashboard (+0.5)</strong></p>
+<p>Build một màn hình hoặc UI hiển thị nội bộ hệ thống khi xử lý câu hỏi: những gì đã retrieve, tool nào được gọi, LLM nhận gì, LLM quyết định gì, kết quả trả về là gì. Coi như một cửa sổ nhìn vào pipeline — trainer có thể thấy quá trình reasoning xảy ra real-time, không chỉ kết quả cuối cùng.</p>
+<p><strong>Bonus B — Agent Reasoning (+0.5)</strong></p>
+<p>Xử lý các câu hỏi điều tra mở đòi hỏi multi-step reasoning.</p>
+<p><em>Ví dụ: &quot;Is NotificationSvc in a healthy state? Assess its reliability and flag anything that needs attention.&quot;</em></p>
+<p>System phải lên kế hoạch tiếp cận, thu thập từ nhiều nguồn, và tạo ra structured report với các reasoning step hiển thị rõ ràng.</p>
+<p><strong>Bonus C — Knowledge Base Sync (+0.5)</strong></p>
+<p>Documents thay đổi theo thời gian. Knowledge base chỉ sync một lần sẽ trở nên lỗi thời. Xây dựng cơ chế re-sync Bedrock KB khi documents được cập nhật trên S3 — tự động hoặc chạy tay đều được.</p>
+<p><em>Ví dụ: S3 event → Lambda → <code>StartIngestionJob</code>. Hoặc một Jupyter notebook trigger sync theo yêu cầu. Cách nào hoạt động đều được tính.</em></p>
+<p><strong>Bonus tối đa: +1.0.</strong> A hoặc B = +0.5. C = +0.5. Điểm cuối cùng capped tại 11.0.</p>
+<hr />
+<h2 id="ban-nhan-uoc-gi">Bạn nhận được gì</h2>
+<ol>
+<li><p><strong>Knowledge base documents</strong> — ~36 file markdown về GeekBrain: company overview, team structure, service architecture, deployment policies, incident postmortems, SLA policy, security policy, meeting notes, runbooks, và nhiều hơn nữa. Đọc kỹ trước khi bắt đầu build. Không phải tất cả documents có cùng format. Một số mâu thuẫn với nhau.</p>
+</li>
+<li><p><strong>CSV files</strong> — structured data với số liệu chính xác:</p>
+<ul>
+<li><code>monthly_costs.csv</code> — chi phí theo từng service theo tháng (tháng 10/2025 - tháng 3/2026)</li>
+<li><code>incidents.csv</code> — lịch sử incident với severity, duration, root cause, resolution</li>
+<li><code>sla_targets.csv</code> — SLA targets theo từng service theo từng metric</li>
+<li><code>daily_metrics.csv</code> — daily latency, error rate, và request volume (tháng 1 - tháng 3/2026)</li>
+</ul>
+</li>
+<li><p><strong>Seed script</strong> (<code>seed_data.py</code>) — load CSV files vào SQLite (mặc định) hoặc PostgreSQL. Tạo tables tự động. Chạy script một lần là data sẵn sàng.</p>
+</li>
+<li><p><strong>Monitoring API</strong> (<code>monitoring_api.py</code>) — một Python script chạy locally. Trả về live system state dạng JSON. Hit từng endpoint trước khi bắt đầu build — có data chỉ có từ API mà không có trong bất kỳ document nào.</p>
+</li>
+<li><p><strong>Tool list</strong> — các tool mà AI system của bạn cần implement (xem bên dưới).</p>
+</li>
+</ol>
+<hr />
+<h2 id="cac-tool-system-phai-co">Các Tool System Phải Có</h2>
+<p>Đây là các tool mà AI system của bạn phải có khả năng gọi. Bạn quyết định cách implement từng tool — tham số nhận vào là gì, trả về gì, kết nối với data như thế nào.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Tác dụng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Service Status</strong></td>
+<td>Lấy live status hiện tại của một service</td>
+</tr>
+<tr>
+<td><strong>Service Metrics</strong></td>
+<td>Lấy current performance metrics của một service</td>
+</tr>
+<tr>
+<td><strong>List Services</strong></td>
+<td>Liệt kê tất cả service trong system</td>
+</tr>
+<tr>
+<td><strong>Incident History</strong></td>
+<td>Lấy các incident đã qua của một service</td>
+</tr>
+<tr>
+<td><strong>Team Info</strong></td>
+<td>Lấy thông tin chi tiết về một team</td>
+</tr>
+<tr>
+<td><strong>Compare Services</strong></td>
+<td>So sánh một metric giữa nhiều service</td>
+</tr>
+<tr>
+<td><strong>Database Query</strong></td>
+<td>Query structured data (costs, SLAs, daily metrics)</td>
+</tr>
+</tbody>
+</table>
+<p>Các tool này lấp đầy khoảng trống giữa những gì có trong documents và những gì không có. Câu hỏi L3 yêu cầu tools.</p>
+<hr />
+<h2 id="phai-nop-gi-vao-thu-sau">Phải Nộp Gì Vào Thứ Sáu</h2>
+<h3 id="system-ang-chay-uoc">1. System đang chạy được</h3>
+<p>Một AI system đang hoạt động — local hoặc cloud — nhận câu hỏi và trả về câu trả lời. Phải demo live vào thứ Sáu. Không được hardcode response. Trainer sẽ hỏi những câu hỏi system chưa từng thấy.</p>
+<h3 id="slides">2. Slides</h3>
+<p>Slides thứ Sáu được rút từ Evidence Pack (xem bên dưới). Build markdown trước, rồi lấy các screenshots và quyết định quan trọng vào slides.</p>
+<h3 id="evidence-pack">3. Evidence Pack</h3>
+<blockquote>
+<p>Trainer chấm điểm theo file này sau khi bạn rời phòng. Xem section <strong>Evidence Pack</strong> riêng bên dưới.</p>
+</blockquote>
+<hr />
+<h2 id="evidence-pack-1">Evidence Pack</h2>
+<blockquote>
+<p><strong>Đây là deliverable quan trọng nhất trong tuần.</strong> Slides thứ Sáu được rút từ file này. Trainer sẽ kiểm tra lại mọi claim trong file này sau buổi presentation.</p>
+</blockquote>
+<p><strong>Đây là gì:</strong> một file markdown duy nhất tại <code>docs/W4_evidence.md</code> trong group repository.</p>
+<p><strong>Tại sao markdown:</strong> Slides hay bị mất, bullet bị cắt, screenshot bị mờ khi resize. File markdown nằm trong repo, đi cùng code, giữ nguyên resolution, và trainer có thể verify mọi thứ sau thứ Sáu.</p>
+<hr />
+<h3 id="section-1-cover">Section 1 — Cover</h3>
+<ul>
+<li>Số nhóm</li>
+<li>Tên thành viên</li>
+<li>LLM sử dụng (ví dụ: Claude Sonnet via Bedrock)</li>
+<li>Framework sử dụng (ví dụ: LangChain / Bedrock Agents / raw API)</li>
+<li>Link repo</li>
+</ul>
+<hr />
+<h3 id="section-2-architecture-overview">Section 2 — Architecture Overview</h3>
+<ul>
+<li>System architecture diagram (ASCII, Mermaid, hoặc image)</li>
+<li>Danh sách component: mỗi phần làm gì</li>
+<li>Data flow: câu hỏi đi từ user input → retrieval/tool → LLM → câu trả lời cuối</li>
+<li>Screenshot system đang chạy (terminal hiển thị app started, hoặc URL nếu deploy cloud)</li>
+</ul>
+<hr />
+<h3 id="section-3-decision-log">Section 3 — Decision Log</h3>
+<p>3 quyết định quan trọng trong tuần. Với mỗi quyết định:</p>
+<ul>
+<li>Bạn chọn gì</li>
+<li>Bạn học được gì</li>
+</ul>
+<p>Ít nhất 1 điều không hoạt động và bạn đã làm gì thay thế. &quot;Chúng tôi thử X, fail vì Y, nên chuyển sang Z&quot; có giá trị hơn &quot;mọi thứ đều ổn.&quot;</p>
+<hr />
+<h3 id="section-4-per-level-evidence">Section 4 — Per-Level Evidence</h3>
+<p><strong>Với mỗi level, cần 2 thứ:</strong></p>
+<ol>
+<li><strong>Câu trả lời đúng</strong> — screenshot output của system</li>
+<li><strong>Bằng chứng câu hỏi thực sự đi qua system</strong> — không chỉ kết quả cuối, mà phải có bằng chứng pipeline đã xử lý (retrieve chunks, gọi tool, gọi Bedrock, v.v.)</li>
+</ol>
+<p><strong>Cách cung cấp bằng chứng:</strong></p>
+<ul>
+<li>Nếu bạn có observability dashboard (Bonus A) — screenshot nó. Đó chính LÀ bằng chứng.</li>
+<li>Nếu không — cho 1-2 screenshot terminal log hoặc CloudWatch log cho thấy request đi qua system: Bedrock API call, retrieved chunks, tool invocation và response. Trainer cần thấy LLM nhận data thật, không phải tự đoán.</li>
+</ul>
+<p><strong>Không cần nhiều screenshot. 1-2 mỗi level là đủ.</strong> Chất lượng hơn số lượng.</p>
+<hr />
+<p><strong>L1 Evidence:</strong></p>
+<ul>
+<li>Screenshot: câu trả lời đúng kèm source document được cite</li>
+<li>Bằng chứng: log cho thấy retrieval đã xảy ra (Bedrock Retrieve call trả về chunks, hoặc output từ custom pipeline)</li>
+</ul>
+<p><strong>L2 Evidence:</strong></p>
+<ul>
+<li>Screenshot: multi-doc synthesis hoặc conflict resolution đúng (ví dụ: API rate limit → 1000, không phải 500)</li>
+<li>1-2 dòng: system xử lý conflicting documents như thế nào</li>
+</ul>
+<p><strong>L3 Evidence:</strong></p>
+<ul>
+<li>Screenshot: câu trả lời số liệu chính xác (ví dụ: &quot;PaymentGW Q1 cost = $16,500&quot;)</li>
+<li>Bằng chứng: log cho thấy tool đã được gọi và trả về data thật. <strong>Đây là bằng chứng quan trọng nhất trong toàn bộ Evidence Pack.</strong> Trainer cần thấy tool call — không chỉ câu trả lời.</li>
+</ul>
+<p><strong>L4 Evidence (nếu đã thực hiện):</strong></p>
+<ul>
+<li>Screenshot: cuộc hội thoại 3-4 turn trong đó follow-up tham chiếu lượt trước</li>
+<li>1-2 dòng: chiến lược memory bạn sử dụng</li>
+</ul>
+<p><strong>Nếu bạn dùng AgentCore:</strong></p>
+<ul>
+<li>Architecture diagram: phần nào AgentCore quản lý vs phần nào bạn tự build</li>
+<li>Annotated trace logs cho ít nhất 2 câu hỏi (1 RAG-only, 1 tool-augmented) — giải thích từng bước xảy ra gì</li>
+</ul>
+<p><strong>Bonus A Evidence (Observability Dashboard):</strong></p>
+<ul>
+<li>Screenshot: dashboard hiển thị quá trình xử lý câu hỏi — retrieval, tool calls, LLM decisions hiển thị real-time</li>
+</ul>
+<p><strong>Bonus B Evidence (Agent Reasoning):</strong></p>
+<ul>
+<li>Screenshot: structured investigation output với reasoning steps hiển thị rõ ràng</li>
+</ul>
+<hr />
+<h3 id="section-5-reflection">Section 5 — Reflection</h3>
+<p>Level khó nhất và tại sao. Bạn sẽ làm gì khác nếu có thêm một ngày.</p>
+<hr />
+<h3 id="cham-iem-evidence-pack">Chấm điểm Evidence Pack</h3>
+<table>
+<thead>
+<tr>
+<th>Bạn nộp gì</th>
+<th>Điểm evidence tối đa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Không có Evidence Pack</td>
+<td>Cap ở 2/5</td>
+</tr>
+<tr>
+<td>Chỉ có screenshot câu trả lời — không có log, không có bằng chứng system xử lý</td>
+<td>Cap ở 3/5</td>
+</tr>
+<tr>
+<td>Screenshot + bằng chứng system (log/dashboard) + notes + decision log</td>
+<td>4/5</td>
+</tr>
+<tr>
+<td>Tất cả ở trên, sạch đẹp và có tổ chức</td>
+<td>5/5</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Link discipline:</strong> Slides thứ Sáu phải link đến Evidence Pack commit. Post commit link lên Slack trước slot của bạn. Không có link = điểm evidence bị cap ở 3 trước khi demo bắt đầu.</p>
+<hr />
+<h2 id="cham-iem-thang-10">Chấm điểm (thang 10)</h2>
+<h3 id="iem-co-ban-10-iem">Điểm cơ bản (10 điểm)</h3>
+<table>
+<thead>
+<tr>
+<th>Tiêu chí</th>
+<th>Điểm</th>
+<th>Đo lường gì</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>L1 — Retrieval</strong></td>
+<td>2.0</td>
+<td>Câu trả lời single-doc đúng với source citation</td>
+</tr>
+<tr>
+<td><strong>L2 — Multi-Source Retrieval</strong></td>
+<td>3.0</td>
+<td>Multi-doc synthesis, giải quyết conflict</td>
+</tr>
+<tr>
+<td><strong>L3 — Retrieval + Tools</strong></td>
+<td>4.0</td>
+<td>Câu trả lời số liệu chính xác từ tools/DB/API</td>
+</tr>
+<tr>
+<td><strong>L4 — Memory</strong></td>
+<td>1.0</td>
+<td>Multi-turn conversation với pronoun resolution</td>
+</tr>
+<tr>
+<td><strong>Tổng</strong></td>
+<td><strong>10.0</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>L1-L3 chiếm 90% điểm của bạn.</strong> Nếu system xử lý L1-L3 ổn định, bạn đạt 9/10 trước L4.</p>
+<h3 id="iem-thuong-1.0-toi-a">Điểm thưởng (+1.0 tối đa)</h3>
+<table>
+<thead>
+<tr>
+<th>Bonus</th>
+<th>Điểm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bonus A — Observability Dashboard</strong></td>
+<td>+0.5 — UI hiển thị nội bộ pipeline: những gì retrieved, tool nào được gọi, LLM input/output</td>
+</tr>
+<tr>
+<td><strong>Bonus B — Agent Reasoning</strong></td>
+<td>+0.5 — Multi-step investigation với structured output và visible reasoning</td>
+</tr>
+<tr>
+<td><strong>Bonus C — Data Operations</strong></td>
+<td>+0.5 — Auto-sync S3 với production mindset</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Điểm tối đa có thể đạt: 11.0.</strong> A và B share +0.5; C là +0.5 riêng. Bonus chỉ chấm nếu L1-L3 đang hoạt động.</p>
+<h3 id="cach-cham-iem-tung-level-likert-1-5">Cách chấm điểm từng level (Likert 1-5)</h3>
+<table>
+<thead>
+<tr>
+<th>Điểm</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Không thực hiện hoặc hoàn toàn hỏng</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Đã thực hiện nhưng chủ yếu sai — câu trả lời sai, thiếu source, sai số</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Hoạt động một phần — một số câu trả lời đúng, một số sai. Tool call xảy ra nhưng kết quả không ổn định</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Hoạt động ổn định — câu trả lời đúng, source citations, số liệu chính xác. Vài edge case nhỏ</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Xuất sắc — xử lý đúng tất cả test questions, graceful error handling, output sạch</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Chuyển đổi điểm level → điểm số:</strong> <code>points = (score / 5) * max_points_for_level</code></p>
+<p>Ví dụ: L3 score 4/5 → (4/5) * 4.0 = 3.2 điểm</p>
+<h3 id="cac-thanh-phan-thuyet-trinh">Các thành phần thuyết trình</h3>
+<p>Điểm 10 đến từ:</p>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Tỷ trọng</th>
+<th>Trainer đánh giá gì</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Live Demo (L1-L4)</td>
+<td>50%</td>
+<td>System có trả lời đúng ở mỗi level không?</td>
+</tr>
+<tr>
+<td>Individual QnA</td>
+<td>30%</td>
+<td>Bạn có hiểu system của mình hoạt động như thế nào không?</td>
+</tr>
+<tr>
+<td>Architecture &amp; Evidence Pack</td>
+<td>20%</td>
+<td>Diagram, decision log, chất lượng evidence</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="quy-tac">Quy tắc</h2>
+<ol>
+<li><strong>Architecture là tự do.</strong> Bất kỳ approach nào, bất kỳ framework nào, bất kỳ LLM nào.</li>
+<li><strong>Chọn LLM tự do trên AWS Bedrock.</strong></li>
+<li><strong>Không được hardcode câu trả lời.</strong> Trainer hỏi những câu hỏi ngoài tập ví dụ.</li>
+<li><strong>Mọi team đều nhận cùng data package.</strong></li>
+<li><strong>AI-assisted coding được phép và được khuyến khích.</strong></li>
+</ol>
+<hr />
+<h2 id="lich-trinh">Lịch trình</h2>
+<table>
+<thead>
+<tr>
+<th>Ngày</th>
+<th>Diễn ra gì</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Thứ Ba</strong></td>
+<td>Nhận data package. Đọc tất cả documents. Start monitoring API và hit từng endpoint. Chạy seed script. Vẽ architecture trước khi viết code.</td>
+</tr>
+<tr>
+<td><strong>Thứ Năm 08:30-10:00</strong></td>
+<td>Giới thiệu: RAG systems, tools, memory, agent reasoning.</td>
+</tr>
+<tr>
+<td><strong>Thứ Năm 13:00-17:00</strong></td>
+<td>Build. Làm L1 chạy được trước. Không bắt đầu L3 cho đến khi L1 ổn định.</td>
+</tr>
+<tr>
+<td><strong>Thứ Sáu 08:00-12:00</strong></td>
+<td>Hoàn thiện system, viết Evidence Pack, chuẩn bị slides. Post Evidence Pack commit link lên Slack trước slot của nhóm.</td>
+</tr>
+<tr>
+<td><strong>Thứ Sáu 14:00-18:00</strong></td>
+<td>Thuyết trình (~10-12 phút mỗi nhóm).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="format-thuyet-trinh-thu-sau-10-12-phut">Format thuyết trình thứ Sáu (~10-12 phút)</h2>
+<p><strong>Trước khi thuyết trình:</strong> post link commit <code>docs/W4_evidence.md</code> lên trainer Slack channel. Không có link = điểm evidence pre-flagged ở cap 2.</p>
+<p><strong>Phần 1 — Architecture (3 phút):</strong> Trình bày system diagram. Đặt tên từng component. Giải thích một quyết định quan trọng và một điều bạn đã thay đổi trong tuần.</p>
+<p><strong>Phần 2 — Individual QnA (3 phút):</strong> 2-3 thành viên team được chọn ngẫu nhiên và hỏi về cách hoạt động của system.</p>
+<p><strong>Phần 3 — Live Demo (4-5 phút):</strong> Demo system trả lời câu hỏi ở mỗi level đã thực hiện.</p>
+<p>Nếu live answer thất bại, screenshot trong Evidence Pack cho level đó được chấp nhận thay thế — không bị phạt. Thiếu cả live lẫn screenshot cho một level sẽ cap điểm level đó ở 2.</p>
+<p><strong>Phần 4 — Lessons Learned (1 phút):</strong> Level khó nhất và tại sao. Bạn sẽ làm gì khác.</p>
+<hr />
+<h2 id="bat-au-con-uong-quan-trong-en-l3">Bắt đầu — Con đường quan trọng đến L3</h2>
+<p>Làm theo thứ tự này. Không được bỏ qua bước.</p>
+<h3 id="ngay-1-thu-ba-kham-pha-data">Ngày 1 (Thứ Ba): Khám phá data</h3>
+<ol>
+<li>Đọc từng document trong knowledge base. Document nào cùng topic? Chỗ nào mâu thuẫn? (Bạn cần điều này cho L2.)</li>
+<li>Start monitoring API: <code>cd data_package/scripts &amp;&amp; uv sync &amp;&amp; uv run uvicorn monitoring_api:app --port 8000</code></li>
+<li>Hit từng API endpoint thủ công. Ghi lại data nào CHỈ có từ API.</li>
+<li>Chạy seed script: <code>uv run python seed_data.py --db-type sqlite</code></li>
+<li>Query database: <code>SELECT service, total_cost FROM monthly_costs WHERE month = '2026-03' ORDER BY total_cost DESC;</code> — bạn phải thấy PaymentGW ở 7500.</li>
+</ol>
+<h3 id="ngay-2-thu-nam-build-l1-l2-l3">Ngày 2 (Thứ Năm): Build L1 → L2 → L3</h3>
+<p><strong>Buổi sáng — L1 (mục tiêu: chạy được trước 12:00):</strong></p>
+<ol>
+<li>Upload knowledge base docs lên S3</li>
+<li>Tạo Bedrock KB, sync, verify</li>
+<li>Test retrieval: có trả về đúng chunks không?</li>
+<li>Kết nối LLM với system prompt</li>
+<li>Kiểm tra: &quot;Who leads Team Platform?&quot; → &quot;Alex Chen&quot;</li>
+</ol>
+<p><strong>Buổi chiều — L2 (mục tiêu: chạy được trước 15:00):</strong></p>
+<ol>
+<li>Tăng retrieval K lên 8-10</li>
+<li>Cải thiện system prompt cho conflict resolution</li>
+<li>Test: &quot;What is the API rate limit?&quot; → phải resolve v1 vs v2</li>
+</ol>
+<p><strong>Chiều muộn — L3 (mục tiêu: tool call đầu tiên chạy được trước 17:00):</strong></p>
+<ol>
+<li>Build Database Query tool function</li>
+<li>Build Service Metrics tool function</li>
+<li>Register tools với LLM</li>
+<li>Test: &quot;What was PaymentGW's total cost in Q1?&quot; → $16,500</li>
+</ol>
+<h3 id="ngay-3-sang-thu-sau-hoan-thien-evidence">Ngày 3 (Sáng thứ Sáu): Hoàn thiện + Evidence</h3>
+<ol>
+<li>Test tất cả levels end-to-end</li>
+<li>Thêm L4 memory nếu còn thời gian (ngay cả simple last-5-turns window cũng tính)</li>
+<li>Viết Evidence Pack với screenshots và logs</li>
+<li>Chuẩn bị slides</li>
+</ol>
+<hr />
+<p>Chúc may mắn. Hãy xây dựng thứ thực sự trả lời được câu hỏi.</p>
+</main>
+<nav class="toc"><div class="toc-title">Trong trang này</div>
+<a href="#thu-thach-tuan-nay">Thử thách tuần này</a>
+<a href="#bon-cap-o">Bốn cấp độ</a>
+<a href="#l1-retrieval-simple-rag" class="lvl3">L1 — Retrieval (Simple RAG)</a>
+<a href="#l2-multi-source-retrieval-advanced-rag" class="lvl3">L2 — Multi-Source Retrieval (Advanced RAG)</a>
+<a href="#l3-retrieval-tools-tool-augmented-rag" class="lvl3">L3 — Retrieval + Tools (Tool-Augmented RAG)</a>
+<a href="#l4-retrieval-tools-memory-10-iem" class="lvl3">L4 — Retrieval + Tools + Memory (10% điểm)</a>
+<a href="#bonus-opportunities-1.0-toi-a" class="lvl3">Bonus Opportunities (+1.0 tối đa)</a>
+<a href="#ban-nhan-uoc-gi">Bạn nhận được gì</a>
+<a href="#cac-tool-system-phai-co">Các Tool System Phải Có</a>
+<a href="#phai-nop-gi-vao-thu-sau">Phải Nộp Gì Vào Thứ Sáu</a>
+<a href="#system-ang-chay-uoc" class="lvl3">1. System đang chạy được</a>
+<a href="#slides" class="lvl3">2. Slides</a>
+<a href="#evidence-pack" class="lvl3">3. Evidence Pack</a>
+<a href="#evidence-pack-1">Evidence Pack</a>
+<a href="#section-1-cover" class="lvl3">Section 1 — Cover</a>
+<a href="#section-2-architecture-overview" class="lvl3">Section 2 — Architecture Overview</a>
+<a href="#section-3-decision-log" class="lvl3">Section 3 — Decision Log</a>
+<a href="#section-4-per-level-evidence" class="lvl3">Section 4 — Per-Level Evidence</a>
+<a href="#section-5-reflection" class="lvl3">Section 5 — Reflection</a>
+<a href="#cham-iem-evidence-pack" class="lvl3">Chấm điểm Evidence Pack</a>
+<a href="#cham-iem-thang-10">Chấm điểm (thang 10)</a>
+<a href="#iem-co-ban-10-iem" class="lvl3">Điểm cơ bản (10 điểm)</a>
+<a href="#iem-thuong-1.0-toi-a" class="lvl3">Điểm thưởng (+1.0 tối đa)</a>
+<a href="#cach-cham-iem-tung-level-likert-1-5" class="lvl3">Cách chấm điểm từng level (Likert 1-5)</a>
+<a href="#cac-thanh-phan-thuyet-trinh" class="lvl3">Các thành phần thuyết trình</a>
+<a href="#quy-tac">Quy tắc</a>
+<a href="#lich-trinh">Lịch trình</a>
+<a href="#format-thuyet-trinh-thu-sau-10-12-phut">Format thuyết trình thứ Sáu (~10-12 phút)</a>
+<a href="#bat-au-con-uong-quan-trong-en-l3">Bắt đầu — Con đường quan trọng đến L3</a>
+<a href="#ngay-1-thu-ba-kham-pha-data" class="lvl3">Ngày 1 (Thứ Ba): Khám phá data</a>
+<a href="#ngay-2-thu-nam-build-l1-l2-l3" class="lvl3">Ngày 2 (Thứ Năm): Build L1 → L2 → L3</a>
+<a href="#ngay-3-sang-thu-sau-hoan-thien-evidence" class="lvl3">Ngày 3 (Sáng thứ Sáu): Hoàn thiện + Evidence</a></nav>
+</div>
+<script>
+(function(){
+  var root=document.documentElement, saved=localStorage.getItem("xb-theme");
+  if(saved){root.setAttribute("data-theme",saved);}
+  else if(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches){root.setAttribute("data-theme","dark");}
+  var btn=document.querySelector(".theme-btn");
+  function lbl(){return root.getAttribute("data-theme")==="dark"?"☀ Light":"☾ Dark";}
+  if(btn){btn.textContent=lbl();btn.addEventListener("click",function(){
+    var d=root.getAttribute("data-theme")==="dark"?"":"dark";
+    if(d){root.setAttribute("data-theme","dark");}else{root.removeAttribute("data-theme");}
+    localStorage.setItem("xb-theme",d);btn.textContent=lbl();});}
+  var s=document.querySelector(".search");
+  if(s){s.addEventListener("input",function(){
+    var q=this.value.toLowerCase();
+    if(q){document.querySelectorAll(".tree details").forEach(function(d){d.open=true;});}
+    document.querySelectorAll(".tree li").forEach(function(li){
+      var a=li.querySelector(":scope > a"); if(!a)return;
+      li.style.display=a.textContent.toLowerCase().indexOf(q)>-1?"":"none";});});}
+  var links=[].slice.call(document.querySelectorAll(".toc a")), map={};
+  links.forEach(function(l){map[l.getAttribute("href").slice(1)]=l;});
+  if(links.length){
+    var obs=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.isIntersecting){links.forEach(function(l){l.classList.remove("active");});
+        if(map[e.target.id])map[e.target.id].classList.add("active");}});},
+      {rootMargin:"-56px 0px -72% 0px"});
+    document.querySelectorAll(".content h2[id],.content h3[id]").forEach(function(h){obs.observe(h);});
+  }
+})();
+</script></body></html>
